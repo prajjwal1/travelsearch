@@ -1,1 +1,5 @@
-scrapy
+# Web Crawling & Scraping
+Scrapy ~= 2.4.1
+
+# Web Framework
+Flask ~= 1.1.2
