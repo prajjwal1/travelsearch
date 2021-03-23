@@ -18,7 +18,7 @@ $ pip3 install -r requirements.txt
 ```
 
 ## 1. Crawling
-  > Maintainer: [@prajjwal1](https://github.com/prajjwal1)
+> Maintainer: [@prajjwal1](https://github.com/prajjwal1)
 
 ```
 $ cd crawl
