@@ -3,15 +3,23 @@
 {% block content %}
 
   <!-- Logo / Search Bar / Search Buttons -->
-  <div class="page">
+  <span>
     <img class="logo" src="{{ url_for('static', filename='img/logo.png') }}">
     <form method="POST" action="">
       <input class="search" maxlength="2048" name="query" type="text" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search" value="{{q}}" aria-label="Search">
-      <div class="Bcontainer">
-        <input class="button left" type="submit" name="submit" value="Travel Search"></input>
-        <input class="button" type="submit" name="submit" value="Advanced Search"></input>
-      </div>
+      <input class="button" type="submit" name="submit" value="Travel Search"></input>
+      <input class="button" type="submit" name="submit" value="Advanced Search"></input>
     </form>
+  </span>
+
+  <!-- Results Info -->
+  <div>
+
+  </div>
+
+  <!-- Search Results -->
+  <div>
+    
   </div>
 
 {% endblock %}
