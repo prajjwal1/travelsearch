@@ -34,7 +34,11 @@ After web pages are crawled, they are indexed and the links they contain are ana
 ## 3. Interface
 > Maintainer: [@CrunchyCat](https://github.com/CrunchyCat) 
 
-The interface is made using Django and is shown in a web browser.
+```
+$ cd travelsearch
+$ python app.py
+```
+The interface is made using Flask and is displayed in a web browser.
 
 ## 4. Clustering
 > Maintainer: [@pin-a](https://github.com/pin-a)
