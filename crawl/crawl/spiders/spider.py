@@ -3,9 +3,11 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.utils.request import referer_str
 from scrapy.linkextractors import LinkExtractor
 from w3lib.url import url_query_cleaner
+from wordninja import split
 
 from ..urls import urls, allowed_domains
 from ..cleaner import clean_text
+
 
 def process_links(links):
     for link in links:
@@ -30,33 +32,16 @@ class TravelSpider(CrawlSpider):
         #  'CLOSESPIDER_PAGECOUNT': 5
     }
 
-    rules = [Rule(LinkExtractor(unique=True), callback='parse_single', follow=True, process_links=process_links)]
+    rules = [Rule(LinkExtractor(unique=True), callback='parse', follow=True, process_links=process_links)]
 
-    #def parse(self, response):
-        #items = []
-        #links = LinkExtractor(canonicalize=True, unique=True).extract_links(response)
-
-        #for link in links:
-            #is_allowed = False
-            #for allowed_domain in self.allowed_domains:
-                #if allowed_domain in link.url:
-                    #is_allowed = True
-
-            #if is_allowed:
-                #item = ScraperItem()
-                #item['url_from'] = response.url
-                #item['url_to'] = link.url
-                #request = scrapy.Request(link.url, callback=self.parse_single, meta={'item': item}, dont_filter=True)
-                #items.append(request.meta['item'])
-            #yield request
-    def parse_single(self, response):
+    def parse(self, response):
         item = {}
         item['url_from'] = referer_str(response.request)
         item['url_to'] = response.url
 
-        para_text = ''.join(response.xpath('//p//text()').getall())
-        span_text = ''.join(response.xpath('//span//text()').getall())
-        div_text = ''.join(response.xpath('//div/text()').getall())
+        para_text = ' '.join(split(''.join(response.xpath('//p//text()').getall())))
+        span_text = ' '.join(split(''.join(response.xpath('//span//text()').getall())))
+        div_text = ' '.join(split(''.join(response.xpath('//div/text()').getall())))
         combined_text = clean_text(para_text + ' ' + span_text + ' ' + div_text)
         item['text'] = combined_text
         yield item
