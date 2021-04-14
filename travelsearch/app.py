@@ -1,4 +1,6 @@
 from flask import Flask, abort, redirect, render_template, request, url_for
+import json
+
 app = Flask(__name__)
 
 # New Home Page
@@ -14,10 +16,16 @@ def index():
 @app.route('/search/<q>', methods=['GET', 'POST'])
 def search(q=""):
     q = q
+
+    with open('../crawl/travel.json') as f:
+        results = json.load(f)  # TODO: Load Real Results
+
+    # Use Query (q) and Results (results) to show correct results in UI
+
     if request.method == 'POST' and 'query' in request.form:
         q = request.form['query']
         return redirect(url_for('search', q=q))
-    return render_template('search.html', q=q, title=q)
+    return render_template('search.html', q=q, title=q, results=results)
 
 # Handles an Unknown Page
 @app.route('/<unknown_page>')
