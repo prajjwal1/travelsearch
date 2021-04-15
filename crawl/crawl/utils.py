@@ -7,5 +7,6 @@ text_to_remove_list = ["If you are a resident of another country or region pleas
                        "Don t take it from us here s what people have to say about this operator",
                        "Travel Travel More from U S News",
                        "Protect Your Trip",
-                       "compare and buy the best travel insurance for the lowest price"
+                       "compare and buy the best travel insurance for the lowest price",
+                       "Travel Travel More from U S News Protect Your Trip Protect Your Trip Search compare and buy the best travel insurance for the lowest price Courtesy of"
                       ]
