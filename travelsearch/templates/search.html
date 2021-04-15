@@ -11,15 +11,22 @@
       <input class="button" type="submit" name="submit" value="Advanced Search"></input>
     </form>
   </span>
+  <br>
 
   <!-- Results Info -->
   <div>
-
+    
   </div>
 
   <!-- Search Results -->
-  <div>
-    
+  <div class="results-container">
+  {% for result in results %}
+    <div class="result"> <!-- TODO: Finalize Schema -->
+      <div class="result-url">{{ result['url_from'] }}</div>
+      <a href="{{ result['url_to'] }}" class="result-title">{{ result['url_to'] }}</a>
+      <div class="result-text">{{ result['text'] }}</div>
+    </div>
+  {% endfor %}
   </div>
 
 {% endblock %}
