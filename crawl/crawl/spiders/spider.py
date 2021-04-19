@@ -36,8 +36,8 @@ class TravelSpider(CrawlSpider):
     start_urls = urls
 
     custom_settings = {
-        'DOWNLOAD_DELAY': 3,
-        'DEPTH_LIMIT': 1,
+        'DOWNLOAD_DELAY': 4,
+        'DEPTH_LIMIT': 3,
         #  'CLOSESPIDER_PAGECOUNT': 5
     }
 
