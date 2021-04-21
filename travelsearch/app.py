@@ -1,5 +1,6 @@
 from flask import Flask, abort, redirect, render_template, request, url_for
 import json
+import webbrowser
 
 app = Flask(__name__)
 
@@ -25,6 +26,9 @@ def search(q=""):
     if request.method == 'POST' and 'query' in request.form:
         q = request.form['query']
         return redirect(url_for('search', q=q))
+    
+    webbrowser.open('https://www.google.com/search?q=' + q) # Search Google Simulateously
+    webbrowser.open('https://www.bing.com/search?q=' + q)   # Search Bing Simulatenously
     return render_template('search.html', q=q, title=q, results=results)
 
 # Handles an Unknown Page
