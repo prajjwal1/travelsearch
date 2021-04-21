@@ -25,6 +25,10 @@ $ cd crawl
 $ scrapy crawl travel -O travel.json
 ```
 The crawled result would appear in travel.json. Each json file has two attributes `url` (indicating what page to show while displaying results) and `text` (we will use this to perform indexing).
+If you want to use `jsonl` format, inside `crawl` directory use,
+```
+$ python3 get_jsonl.py
+```
 
 ## 2. Indexing
 > Maintainer: [@briannoogin](https://github.com/briannoogin)
@@ -32,7 +36,7 @@ The crawled result would appear in travel.json. Each json file has two attribute
 After web pages are crawled, they are indexed and the links they contain are analyzed.
 
 ## 3. Interface
-> Maintainer: [@CrunchyCat](https://github.com/CrunchyCat) 
+> Maintainer: [@CrunchyCat](https://github.com/CrunchyCat)
 
 ```
 $ cd travelsearch

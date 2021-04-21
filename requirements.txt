@@ -1,3 +1,5 @@
+unidecode
+
 # Web Crawling & Scraping
 Scrapy ~= 2.4.1
 wordninja
