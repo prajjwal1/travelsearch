@@ -15,18 +15,48 @@
 
   <!-- Results Info -->
   <div>
-    
+    Results ({{'%0.4f'| format(time|float)}} seconds)
   </div>
 
   <!-- Search Results -->
-  <div class="results-container">
-  {% for result in results %}
-    <div class="result"> <!-- TODO: Finalize Schema -->
-      <div class="result-url">{{ result['url_from'] }}</div>
-      <a href="{{ result['url_to'] }}" class="result-title">{{ result['url_to'] }}</a>
-      <div class="result-text">{{ result['text'] }}</div>
+  <div class="results-container row">
+    <div class="column">
+    {% for result in results1 %}
+      <div class="result"> <!-- TODO: Finalize Schema -->
+        <div class="result-url">{{ result['url'] }}</div>
+        <a href="{{ result['url_to'] }}" class="result-title">{{ result['title'] }}</a>
+        <div class="result-text">{{ result['desc'] }}</div>
+      </div>
+    {% endfor %}
     </div>
-  {% endfor %}
+
+    <div class="column">
+      {% for result in results2 %}
+        <div class="result"> <!-- TODO: Finalize Schema -->
+          <div class="result-url">{{ result['url'] }}</div>
+          <a href="{{ result['url_to'] }}" class="result-title">{{ result['title'] }}</a>
+          <div class="result-text">{{ result['desc'] }}</div>
+        </div>
+      {% endfor %}
+      </div>
+
+      <div class="column">
+        {% for result in results3 %}
+          <div class="result"> <!-- TODO: Finalize Schema -->
+            <div class="result-url">{{ result['url'] }}</div>
+            <a href="{{ result['url_to'] }}" class="result-title">{{ result['title'] }}</a>
+            <div class="result-text">{{ result['desc'] }}</div>
+          </div>
+        {% endfor %}
+        </div>
   </div>
 
 {% endblock %}
+
+<script>
+  handler(a) {
+    return function(e) {
+      console.log('Hello ' + a); // Hello world
+    }
+  }
+  </script>

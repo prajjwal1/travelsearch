@@ -1,6 +1,7 @@
 from flask import Flask, abort, redirect, render_template, request, url_for
 import json
 import webbrowser
+import time
 
 app = Flask(__name__)
 
@@ -16,20 +17,35 @@ def index():
 # Search Page
 @app.route('/search/<q>', methods=['GET', 'POST'])
 def search(q=""):
+    timeStart = time.perf_counter()
     q = q
 
-    with open('../crawl/travel.json') as f:
-        results = json.load(f)  # TODO: Load Real Results
+    # Get Results for Column #1
+    results1 = []
+    with open('sampleResults1.json') as f:
+        results1 = json.load(f)  # TODO: Load Real Results
 
-    # Use Query (q) and Results (results) to show correct results in UI
-
+    # Get Results for Column #2
+    results2 = []
+    with open('sampleResults2.json') as f:
+        results2 = json.load(f)  # TODO: Load Real Results
+    
+    #Get Results for Column #3
+    results3 = []
+    with open('sampleResults3.json') as f:
+        results3 = json.load(f)  # TODO: Load Real Results
+    
+    # Get the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
         q = request.form['query']
         return redirect(url_for('search', q=q))
     
+    # Determine Time to Show Results
+    elapsedTime = time.perf_counter() - timeStart
+
     webbrowser.open('https://www.google.com/search?q=' + q) # Search Google Simulateously
     webbrowser.open('https://www.bing.com/search?q=' + q)   # Search Bing Simulatenously
-    return render_template('search.html', q=q, title=q, results=results)
+    return render_template('search.html', q=q, title=q, time=elapsedTime, results1=results1, results2=results2, results3=results3)
 
 # Handles an Unknown Page
 @app.route('/<unknown_page>')
