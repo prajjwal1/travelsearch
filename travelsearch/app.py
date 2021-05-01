@@ -20,27 +20,27 @@ def search(q=""):
     timeStart = time.perf_counter()
     q = q
 
-    # Get Results for Column #1
+    # Gets Results for Column #1
     results1 = []
     with open('sampleResults1.json') as f:
         results1 = json.load(f)  # TODO: Load Real Results
 
-    # Get Results for Column #2
+    # Gets Results for Column #2
     results2 = []
     with open('sampleResults2.json') as f:
         results2 = json.load(f)  # TODO: Load Real Results
     
-    #Get Results for Column #3
+    # Gets Results for Column #3
     results3 = []
     with open('sampleResults3.json') as f:
         results3 = json.load(f)  # TODO: Load Real Results
     
-    # Get the Query from the Interface
+    # Gets the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
         q = request.form['query']
         return redirect(url_for('search', q=q))
     
-    # Determine Time to Show Results
+    # Determines Time to Show Results
     elapsedTime = time.perf_counter() - timeStart
 
     webbrowser.open('https://www.google.com/search?q=' + q) # Search Google Simulateously
