@@ -125,8 +125,8 @@ footer {
 }
 
 .results-container {
-  padding: 15px 15px 15px 20%;
-  max-width: 80%;
+  padding: 15px 15px 15px 5%;
+  max-width: 95%;
 }
 
 .result {
@@ -160,4 +160,16 @@ footer {
 .result-text {
   font-size: 14px;
   color: #4d5156;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }
