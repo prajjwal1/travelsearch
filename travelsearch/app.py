@@ -3,6 +3,7 @@ import json
 import webbrowser
 import time
 import sys
+import nltk
 sys.path.append("../clustering")
 from rerankingkmeans import getDocs
 from rerankingComplete import getDocsComplete
@@ -26,28 +27,20 @@ def search(q=""):
 
     # Sets eq to be the Expanded Query # TODO: Expand Query
     eq = q
+
     # Gets Results for Column #1
     results1 = []
     with open('sampleResults1.json') as f:
         results1 = json.load(f)  # TODO: Load Real Results
 
     # Gets Results for Column #2
-    results2 = []
     results2 = getDocs(q)
-    #with open('sampleResults2.json') as f:
-        #results2 = json.load(f)  # TODO: Load Real Results
     
     # Gets Results for Column #3
-    results3 = []
     results3 = getDocsComplete(q)
-    #with open('sampleResults3.json') as f:
-        #results3 = json.load(f)  # TODO: Load Real Results
 
     # Gets Results for Column #4
-    results4 = []
     results4 = getDocsSingle(q)
-    #with open('sampleResults4.json') as f:
-        #results4 = json.load(f)  # TODO: Load Real Results
     
     # Gets the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
@@ -74,4 +67,7 @@ def not_found(error):
     return render_template('404.html', title="Page Not Found")
 
 if __name__ == '__main__':
+    nltk.download('stopwords')
+    nltk.download('punkt')
+    nltk.download('wordnet')
     app.run(debug=True)

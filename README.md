@@ -21,7 +21,7 @@ $ python
 $ import nltk
 $ nltk.download('stopwords')
 $ nltk.download('punkt')
-$ ntlk.download('wordnet')
+$ nltk.download('wordnet')
 $ exit
 ```
 
