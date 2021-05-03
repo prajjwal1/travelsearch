@@ -2,6 +2,11 @@ from flask import Flask, abort, redirect, render_template, request, url_for
 import json
 import webbrowser
 import time
+import sys
+sys.path.append("../clustering")
+from rerankingkmeans import getDocs
+from rerankingComplete import getDocsComplete
+from rerankingSingle import getDocsSingle
 
 app = Flask(__name__)
 
@@ -28,18 +33,21 @@ def search(q=""):
 
     # Gets Results for Column #2
     results2 = []
-    with open('sampleResults2.json') as f:
-        results2 = json.load(f)  # TODO: Load Real Results
+    results2 = getDocs(q)
+    #with open('sampleResults2.json') as f:
+        #results2 = json.load(f)  # TODO: Load Real Results
     
     # Gets Results for Column #3
     results3 = []
-    with open('sampleResults3.json') as f:
-        results3 = json.load(f)  # TODO: Load Real Results
+    results3 = getDocsComplete(q)
+    #with open('sampleResults3.json') as f:
+        #results3 = json.load(f)  # TODO: Load Real Results
 
     # Gets Results for Column #4
     results4 = []
-    with open('sampleResults4.json') as f:
-        results4 = json.load(f)  # TODO: Load Real Results
+    results4 = getDocsSingle(q)
+    #with open('sampleResults4.json') as f:
+        #results4 = json.load(f)  # TODO: Load Real Results
     
     # Gets the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
