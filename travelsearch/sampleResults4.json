@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://www.travelsearch.com",
+    "title": "Travel Search - Find Travel Pages",
+    "desc": "A search engine created for Information Retrieval class. Allows searching across a wide array travel-related web pages."
+  },
+  {
+    "url": "https://www.hotels.com",
+    "title": "Hotels.com - Deals & Discounts for Hotel Reservations from ...",
+    "desc": "Hotels.com | Find cheap hotels and discounts when you book on Hotels.com. Compare hotel deals, offers and read unbiased reviews on hotels."
+  },
+  {
+    "url": "https://www.trivago.com",
+    "title": "trivago.com - Compare hotel prices worldwide",
+    "desc": "trivago is a hotel search with an extensive price comparison. The prices shown come from numerous hotels and booking websites. This means that while users ..."
+  },
+  {
+    "url": "https://www.travelocity.com",
+    "title": "Travelocity: Wander Wisely with Cheap Hotels, Flights ...",
+    "desc": "Wander Wisely with the Price Match Guarantee, Free Changes & Cancellations, 24/7 Personal Assistance only with Travelocity's Customer First Guarantee."
+  },
+  {
+    "url": "https://www.google.com",
+    "title": "Google",
+    "desc": "The Google Search Engine"
+  }
+]
