@@ -56,7 +56,7 @@ The interface is made using Flask and is displayed in a web browser.
 > Maintainer: [@pin-a](https://github.com/pin-a)
 
 Web pages are clustered and used to improve the relevance of search results.
-
+```
 $ cd clustering
 $ python AggVectorize.py
 $ python kmeanVectorize.py
@@ -79,7 +79,7 @@ $ python clusteringAggSingle.py
 The documents are clustered using single link agglomerative clustering and the files CLAggSingle.pickle (cluster labels for each document) and CAggSingle.pickle (centroids of each cluster) are generated. 
 
 When a query is asked through the user interface rerankingkmeans.py, rerankingComplete.py, and rerankingSingle.py are called and the results are presented. 
-
+```
 ## 5. Query Expansion
 > Maintainer: [@ssMD16](https://github.com/ssMD16)
 
