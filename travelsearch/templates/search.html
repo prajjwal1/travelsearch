@@ -24,7 +24,7 @@
     <p>No Clustering</p>
     {% for result in results1 %}
       <div class="result"> <!-- TODO: Finalize Schema -->
-        <div class="result-url">{{ result['url'] }}</div>
+        <div href="{{ result['url'] }}" class="result-url">{{ result['url'] }}</div>
         <a href="{{ result['url'] }}" class="result-title">{{ result['title'] }}</a>
         <div class="result-text">{{ result['desc'] }}</div>
       </div>
@@ -35,7 +35,7 @@
     <p>Clustering Method #1</p>
       {% for result in results2 %}
         <div class="result"> <!-- TODO: Finalize Schema -->
-          <!-- <div class="result-url">{{ result['url'] }}</div> -->
+          <!-- <div href="{{ result['url'] }}" class="result-url">{{ result['url'] }}</div> -->
           <!-- <a href="{{ result['url'] }}" class="result-title">{{ result['title'] }}</a> -->
           <!-- <div class="result-text">{{ result['desc'] }}</div> -->
           <a href="{{ result }}" class="result-url">{{ result }}</a>
@@ -47,7 +47,7 @@
       <p>Clustering Method #2</p>
         {% for result in results3 %}
           <div class="result"> <!-- TODO: Finalize Schema -->
-            <!-- <div class="result-url">{{ result['url'] }}</div> -->
+            <!-- <div href="{{ result['url'] }}" class="result-url">{{ result['url'] }}</div> -->
             <!-- <a href="{{ result['url'] }}" class="result-title">{{ result['title'] }}</a> -->
             <!-- <div class="result-text">{{ result['desc'] }}</div> -->
             <a href="{{ result }}" class="result-url">{{ result }}</a>
@@ -59,7 +59,7 @@
       <p>Clustering Method #3</p>
         {% for result in results4 %}
           <div class="result"> <!-- TODO: Finalize Schema -->
-            <!-- <div class="result-url">{{ result['url'] }}</div> -->
+            <!-- <div href="{{ result['url'] }}" class="result-url">{{ result['url'] }}</div> -->
             <!-- <a href="{{ result['url'] }}" class="result-title">{{ result['title'] }}</a> -->
             <!-- <div class="result-text">{{ result['desc'] }}</div> -->
             <a href="{{ result }}" class="result-url">{{ result }}</a>
