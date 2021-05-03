@@ -19,6 +19,8 @@ def index():
 def search(q=""):
     timeStart = time.perf_counter()
 
+    # Sets eq to be the Expanded Query # TODO: Expand Query
+    eq = q
     # Gets Results for Column #1
     results1 = []
     with open('sampleResults1.json') as f:
@@ -49,7 +51,7 @@ def search(q=""):
 
     webbrowser.open('https://www.google.com/search?q=' + q) # Search Google Simulateously
     webbrowser.open('https://www.bing.com/search?q=' + q)   # Search Bing Simulatenously
-    return render_template('search.html', q=q, title=q, time=elapsedTime, results1=results1, results2=results2, results3=results3, results4=results4)
+    return render_template('search.html', q=q, eq=eq, title=q, time=elapsedTime, results1=results1, results2=results2, results3=results3, results4=results4)
 
 # Handles an Unknown Page
 @app.route('/<unknown_page>')
