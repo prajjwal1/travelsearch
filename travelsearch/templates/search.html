@@ -20,6 +20,7 @@
   <!-- Search Results -->
   <div class="results-container row">
     <div class="column">
+    <p>No Clustering</p>
     {% for result in results1 %}
       <div class="result"> <!-- TODO: Finalize Schema -->
         <div class="result-url">{{ result['url'] }}</div>
@@ -30,6 +31,7 @@
     </div>
 
     <div class="column">
+    <p>Clustering Method #1</p>
       {% for result in results2 %}
         <div class="result"> <!-- TODO: Finalize Schema -->
           <div class="result-url">{{ result['url'] }}</div>
@@ -40,6 +42,7 @@
       </div>
 
       <div class="column">
+      <p>Clustering Method #2</p>
         {% for result in results3 %}
           <div class="result"> <!-- TODO: Finalize Schema -->
             <div class="result-url">{{ result['url'] }}</div>
@@ -47,7 +50,18 @@
             <div class="result-text">{{ result['desc'] }}</div>
           </div>
         {% endfor %}
-        </div>
+      </div>
+
+      <div class="column">
+      <p>Clustering Method #3</p>
+        {% for result in results4 %}
+          <div class="result"> <!-- TODO: Finalize Schema -->
+            <div class="result-url">{{ result['url'] }}</div>
+            <a href="{{ result['url_to'] }}" class="result-title">{{ result['title'] }}</a>
+            <div class="result-text">{{ result['desc'] }}</div>
+          </div>
+        {% endfor %}
+      </div>
   </div>
 
 {% endblock %}

@@ -34,6 +34,11 @@ def search(q=""):
     results3 = []
     with open('sampleResults3.json') as f:
         results3 = json.load(f)  # TODO: Load Real Results
+
+    # Gets Results for Column #4
+    results4 = []
+    with open('sampleResults4.json') as f:
+        results4 = json.load(f)  # TODO: Load Real Results
     
     # Gets the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
@@ -45,7 +50,7 @@ def search(q=""):
 
     webbrowser.open('https://www.google.com/search?q=' + q) # Search Google Simulateously
     webbrowser.open('https://www.bing.com/search?q=' + q)   # Search Bing Simulatenously
-    return render_template('search.html', q=q, title=q, time=elapsedTime, results1=results1, results2=results2, results3=results3)
+    return render_template('search.html', q=q, title=q, time=elapsedTime, results1=results1, results2=results2, results3=results3, results4=results4)
 
 # Handles an Unknown Page
 @app.route('/<unknown_page>')
