@@ -79,13 +79,13 @@ def getDocsSingle(query):
         vectors = scipy.sparse.csr_matrix(vectors)
 
     print(vectors.shape)
-    print(list(centroidSim)[:3])
+    print(list(centroidSim)[:5])
 
     simMap = {}
     #if a cluster label == maxSimCluster
     i = 0
     for i in range(len(labels)): 
-        if labels[i] in list(centroidSim)[:3]:
+        if labels[i] in list(centroidSim)[:5]:
             #compute the score between the query and the doc in that index
             #sim = linear_kernel(queryVector, vectors[i].reshape(1,-1))
             sim = cosineSim(queryVector, vectors.getrow(i).toarray())
@@ -119,7 +119,7 @@ def cosineSim(queryVector, CDVector):
 
 #reranking the documents and sending back top relevent ones in the cluster
 
-startTime = datetime.now()
-print(getDocsSingle("san diego zoo"))
+#startTime = datetime.now()
+#print(getDocsSingle("visa for visiting china"))
 
-print("total time = ", datetime.now() - startTime)
+#print("total time = ", datetime.now() - startTime)

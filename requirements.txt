@@ -1,4 +1,9 @@
 unidecode
+pandas
+sklearn
+matplotlib
+nltk
+scipy
 
 # Web Crawling & Scraping
 Scrapy ~= 2.4.1
