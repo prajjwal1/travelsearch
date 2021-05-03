@@ -88,13 +88,13 @@ def getDocs(query):
         #vectors = vectors.toarray()
 
     print(vectors.shape)
-    print(list(centroidSim)[:3])
+    print(list(centroidSim)[:5])
 
     simMap = {}
     i = 0
     for i in range(len(labels)): 
 
-        if labels[i] in list(centroidSim)[:3]:
+        if labels[i] in list(centroidSim)[:5]:
             #compute the score between the query and the doc in that index
             sim = cosineSim(queryVector, vectors.getrow(i).toarray())
              #add teh index in the vector matrix to a index : score map
@@ -125,6 +125,6 @@ def cosineSim(queryVector, CDVector):
 
 
 #startTime = datetime.now()
-print(getDocs("great wall of china"))
+#print(getDocs("great wall of china"))
 
 #print("total time = ", datetime.now() - startTime)
