@@ -6,9 +6,15 @@ import pickle
 import scipy
 
 sys.path.append("../clustering")
+sys.path.append('../index')
 from rerankingkmeans import getDocs
 from rerankingComplete import getDocsComplete
 from rerankingSingle import getDocsSingle
+from ElasticSearchIndex import Index
+from PageRank import PageRank
+from RankedModel import RankedModel
+from HITS import HITS
+from InvertedIndex import InvertedIndex
 
 app = Flask(__name__)
 
@@ -66,11 +72,24 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         
         # Gets the Algorithm Choice
         if res_algo == "PageRank":
-            print("PageRank") #TODO: FINISH THIS
+            es = Index()
+            res = es.query(q)
+            pr = PageRank(res)
+            results = pr.get_result()
+            print("PageRank")
         elif res_algo == "HITS":
-            print("HITS") #TODO: FINISH THIS
+            es = Index()
+            res = es.query(q)
+            hits = HITS(res)
+            results = hits.get_result()
+            print("HITS")
         elif res_algo == "Vector Space":
-            print("Vector Space") #TODO: FINISH THIS
+            es = Index()
+            res = es.query(q)
+            invertedIndex = InvertedIndex(res)
+            model = RankedModel(invertedIndex)
+            results = model.get_result(q, res)
+            print("Vector Space")
         elif res_algo == "K-Means":
             results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
         elif res_algo == "Single-Link Agglomerative":

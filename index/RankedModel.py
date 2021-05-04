@@ -6,6 +6,9 @@ from util import normalize
 import numpy as np
 from collections import Counter
 import time
+import requests
+from bs4 import BeautifulSoup
+
 
 class RankedModel:
     def __init__(self, index):
@@ -67,7 +70,7 @@ class RankedModel:
         # max term weighting
         return (0.4 + 0.6 * log10(tf + 0.5) / log10(maxtf + 1)) * (log10(collection_size + 0.1 /df) / log10(collection_size))
 
-    def query(self, query):
+    def query(self, query, docs):
         query_vector = self.get_query_vector(query)
         doc_vectors = self.doc_vectors
         scores = []
@@ -76,14 +79,31 @@ class RankedModel:
             score = np.dot(doc_vector, query_vector)
             scores.append((index, score))
         scores = sorted(scores, key=lambda x: x[1], reverse=True)[0:10]
-        return scores
+        return [docs[score[0]]['page_name'] for score in scores][0:10]
+
+    def get_result(self, query, docs):
+        sites = self.query(query, docs)
+        results = []
+        for site in sites:
+            result = {}
+            result['url'] = site
+            html_doc = requests.get(site).text
+            soup = BeautifulSoup(html_doc, 'html.parser')
+            desc = soup.find("meta", property="og:description")['content']
+            title = soup.find("meta", property="og:title")['content']
+            if len(desc) > 150:
+                desc = desc[0:150]
+            result['title'] = title
+            result['desc'] = desc
+            results.append(result)
+        return results
 
 if __name__ == '__main__':
+    start = time.time()
     es = Index()
     res = es.query('japan')
     index = InvertedIndex(res)
     model = RankedModel(index)
-    scores = model.query('japan')
-    top_websites = []
-    for doc_index, score in scores:
-        top_websites.append(res[doc_index]['page_text'])
+    print(model.get_result('japan', res))
+    end = time.time()
+    print(end - start)
