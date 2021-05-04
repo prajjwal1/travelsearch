@@ -131,3 +131,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Necessary, but Too big for GitHub
+clustering/complete/AggVectors.pickle
+clustering/kmeans/S.pickle
