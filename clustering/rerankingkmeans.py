@@ -3,7 +3,7 @@ from nltk.tokenize import word_tokenize
 from collections import Counter
 #  import pandas as pd
 import multiprocessing
-from multiprocessing import Pool
+from multiprocessing import Pool, Manager
 #  from joblib import Parallel, delayed
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.cluster import KMeans
@@ -88,37 +88,30 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
     #  maxSimCluster2 = 0
     #  i = -1 #cluster id
     #  centroidSim = {}
+    import itertools
+    num_cores = multiprocessing.cpu_count()
 
-    class Centroid_m():
-        def __init__(self, centroids, queryvector):
-            self.centroidSim = {}
-            self.centroids = centroids
-            self.queryVector = queryvector
-            self.num_cores = multiprocessing.cpu_count()
+    global getCentroid
 
+    def getCentroid(i, centroid, centroidSim):
+            #  centroid_el = self.centroids[centroid_idx]
+            #  print(self.centroids.shape)
+            #  print(centroid_el)
+            #  for i, centroid in enumerate(self.centroids):
+            #  for i, centroid in enumerate(centroid_el):
+                #  print(self.queryVector.shape, centroid.shape)
+        sim = cosineSim(queryVector, centroid.reshape(1, -1))
+        centroidSim[i] = sim
 
-        def getCentroidSim(self):
-            global getCentroid
-
-            def getCentroid(centroid_idx):
-                centroid_el = self.centroids[centroid_idx]
-                #  print(self.centroids.shape)
-                #  print(centroid_el)
-                for i, centroid in enumerate(centroid_el):
-                    #  print(self.queryVector.shape, centroid.shape)
-                    sim = cosineSim(self.queryVector, centroid.reshape(1, -1))
-                    self.centroidSim.update({i : sim})
-
-            with Pool(self.num_cores) as p:
-                p.map(getCentroid, list(range(512)))
-
-
-    centroid_comp = Centroid_m(centroids, queryVector)
-    centroid_comp.getCentroidSim()
+    with multiprocessing.Manager() as manager:
+        ns = manager.Namespace()
+        ns.centroidSim = manager.dict()
+        with manager.Pool(processes=num_cores) as pool:
+            pool.starmap(getCentroid, zip(list(range(512)), centroids, itertools.repeat(ns.centroidSim)))
 
     #  _ = Parallel(n_jobs=num_cores)(delayed(centroid_comp.getCentroidSim)(k_val) for k_val in range(len(centroid_comp.centroids)))
-   
-    centroidSim = OrderedDict(sorted(centroid_comp.centroidSim.items(), key=lambda x: x[1], reverse=True)) 
+
+            centroidSim = OrderedDict(sorted(ns.centroidSim.items(), key=lambda x: x[1], reverse=True)) 
     #  print("Cluster1: ", maxSimCluster, "Cluster2: ", maxSimCluster2)
 
     #now compare the docuements in the cluster to the query and rank them
@@ -133,79 +126,79 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
     #     vectors = scipy.sparse.csr_matrix(vectors)
         #vectors = vectors.toarray()
 
-    print(vectors.shape)
-    print(list(centroidSim)[:5])
+            print(vectors.shape)
+            print(list(centroidSim)[:5])
 
-    simMap = {}
-    i = 0
+            simMap = {}
+            i = 0
 
-    l = list(centroidSim)[:5]
+            l = list(centroidSim)[:5]
 
-    #for i in range(5):
-    
-    cluster1 = check(np.where(labels == l[0])[0])
-    #  print(cluster1)
-    cluster2 = check(np.where(labels == l[1])[0])
-    #  print(cluster2)
-    cluster3 = check(np.where(labels == l[2])[0])
-    #  print(cluster3)
-    cluster4 = check(np.where(labels == l[3])[0])
-    #  print(cluster4)
-    cluster5 = check(np.where(labels == l[4])[0])
-    #  print(cluster5)
-
-
-    mylist = [cluster1, cluster2, cluster3, cluster4, cluster5]
-    li= list(roundrobin(*mylist))
-
-    #x = zip(cluster1, cluster2, cluster3, cluster4, cluster5)
-    #print("zip: ",tuple(x))
-    count = 0
-
-    for element in li:
-        sim = cosineSim(queryVector, vectors.getrow(element).toarray())
-        simMap.update({element : sim})
-        count +=1
-        if count == 100:
-            break
-    '''       
-    for data1, data2, data3 in zip(cluster1, cluster2, cluster3):
-        sim1 = cosineSim(queryVector, vectors.getrow(data1).toarray())
-        sim2 = cosineSim(queryVector, vectors.getrow(data2).toarray())
-        sim3 = cosineSim(queryVector, vectors.getrow(data3).toarray())
-        #sim4 = cosineSim(queryVector, vectors.getrow(data4).toarray())
-       # sim5 = cosineSim(queryVector, vectors.getrow(data5).toarray())
-
-        simMap.update({data1 : sim1})
-        simMap.update({data2 : sim2})
-        simMap.update({data3 : sim3})
-       # simMap.update({data4 : sim4})
-       # simMap.update({data5 : sim5})
-        count += 4
-        if count == 1000:
-            break'''
+            #for i in range(5):
+            
+            cluster1 = check(np.where(labels == l[0])[0])
+            #  print(cluster1)
+            cluster2 = check(np.where(labels == l[1])[0])
+            #  print(cluster2)
+            cluster3 = check(np.where(labels == l[2])[0])
+            #  print(cluster3)
+            cluster4 = check(np.where(labels == l[3])[0])
+            #  print(cluster4)
+            cluster5 = check(np.where(labels == l[4])[0])
+            #  print(cluster5)
 
 
-    '''
-    for i in range(len(labels)): 
+            mylist = [cluster1, cluster2, cluster3, cluster4, cluster5]
+            li= list(roundrobin(*mylist))
 
-        if labels[i] in list(centroidSim)[:5]:
-            #compute the score between the query and the doc in that index
-            sim = cosineSim(queryVector, vectors.getrow(i).toarray())
-             #add the index in the vector matrix to a index : score map
-            simMap.update({i : sim}) 
-    '''
-    simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
-    #sort the scores and the for the top 1000, get the indexes (keys)
-    #enter those keys into the url list
+            #x = zip(cluster1, cluster2, cluster3, cluster4, cluster5)
+            #print("zip: ",tuple(x))
+            count = 0
 
-    returnDocs = []
-    j = 0
-    for index, score in simMap.items(): #add the top 1000 docs in the cluster to the list to send to UI
-        returnDocs.append(urls[index])
-        if j >= 50: 
-            break
-        j = j + 1
+            for element in li:
+                sim = cosineSim(queryVector, vectors.getrow(element).toarray())
+                simMap.update({element : sim})
+                count +=1
+                if count == 100:
+                    break
+            '''       
+            for data1, data2, data3 in zip(cluster1, cluster2, cluster3):
+                sim1 = cosineSim(queryVector, vectors.getrow(data1).toarray())
+                sim2 = cosineSim(queryVector, vectors.getrow(data2).toarray())
+                sim3 = cosineSim(queryVector, vectors.getrow(data3).toarray())
+                #sim4 = cosineSim(queryVector, vectors.getrow(data4).toarray())
+               # sim5 = cosineSim(queryVector, vectors.getrow(data5).toarray())
+
+                simMap.update({data1 : sim1})
+                simMap.update({data2 : sim2})
+                simMap.update({data3 : sim3})
+               # simMap.update({data4 : sim4})
+               # simMap.update({data5 : sim5})
+                count += 4
+                if count == 1000:
+                    break'''
+
+
+            '''
+            for i in range(len(labels)): 
+
+                if labels[i] in list(centroidSim)[:5]:
+                    #compute the score between the query and the doc in that index
+                    sim = cosineSim(queryVector, vectors.getrow(i).toarray())
+                     #add the index in the vector matrix to a index : score map
+                    simMap.update({i : sim}) 
+            '''
+            simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
+            #sort the scores and the for the top 1000, get the indexes (keys)
+            #enter those keys into the url list
+
+            returnDocs = []
+            j = 0
+            for index, score in simMap.items(): #add the top 1000 docs in the cluster to the list to send to UI
+                returnDocs.append(urls[index])
+                if j >= 50: 
+                    break
+                j = j + 1
 
     return returnDocs #send documents to user interface with the new ranking 
 

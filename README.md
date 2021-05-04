@@ -1,5 +1,5 @@
 # Travel Search
-**Information Retrieval Class Project - Group #4**
+**Information Retrieval Class Project**
 
 A complete search engine, optimized for travel, built using Python 3 by the talented developers below
 
@@ -15,9 +15,8 @@ A complete search engine, optimized for travel, built using Python 3 by the tale
 #### Installing Dependencies
 ```
 $ pip3 install -r requirements.txt
-$ pip3 install scikit-learn scipy matplotlib pandas nltk
 
-$ python 
+$ python3 
 $ import nltk
 $ nltk.download('stopwords')
 $ nltk.download('punkt')
