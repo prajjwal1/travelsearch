@@ -62,7 +62,7 @@ class PageRank:
             result = {}
             result['url'] = site
             html_doc = requests.get(site).text
-            soup = BeautifulSoup(html_doc, 'html.parser')
+            soup = BeautifulSoup(html_doc, 'lxml')
             desc = soup.find("meta", property="og:description")['content']
             title = soup.find("meta", property="og:title")['content']
             if len(desc) > 150:
@@ -77,6 +77,6 @@ if __name__ == '__main__':
     es = Index()
     res = es.query('japan', 50)
     pr = PageRank(res)
-    pr.get_result()
+    print(pr.get_result())
     end = time.time()
     print(end-start)
