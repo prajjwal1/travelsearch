@@ -52,7 +52,7 @@ def index():
 @app.route('/search/<q>', methods=['GET', 'POST'])
 def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
     timeStart = time.perf_counter()
-    eq = q
+    eq = q # In case page is just refreshed
 
     # Gets the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
@@ -63,13 +63,10 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         # Gets the Query Expansion Choice
         if res_exp == "Associative":
             eq = q #TODO: FINISH THIS
-            print("Associative")
         elif res_exp == "Metric":
             eq = q #TODO: FINISH THIS
-            print("Metric")
         elif res_exp == "Scalar":
             eq = q #TODO: FINISH THIS
-            print("Scalar")
         else:
             eq = q
         
@@ -89,8 +86,8 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
             results = getDocsComplete(q)
         
         # TODO: REMOVE DEBUG INFO
-        print('EXPANSION: ', res_exp)
         print('ALGO: ', res_algo)
+        print('EXPANSION: ', res_exp)
     
     # Determines Time to Show Results
     elapsedTime = time.perf_counter() - timeStart
