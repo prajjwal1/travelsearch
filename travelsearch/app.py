@@ -41,11 +41,9 @@ def index():
 
 # Search Page
 @app.route('/search/<q>', methods=['GET', 'POST'])
-def search(q=""):
+def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
     timeStart = time.perf_counter()
-
-    # Sets eq to be the Expanded Query # TODO: Expand Query
-    eq = q 
+    eq = q
 
     # Gets the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
@@ -64,39 +62,25 @@ def search(q=""):
             eq = q #TODO: FINISH THIS
             print("Scalar")
         else:
-            res_exp = "No"
+            eq = q
         
         # Gets the Algorithm Choice
         if res_algo == "PageRank":
-            results = [] #TODO: FINISH THIS
-            print("PageRank")
+            print("PageRank") #TODO: FINISH THIS
         elif res_algo == "HITS":
-            results = [] #TODO: FINISH THIS
-            print("HITS")
+            print("HITS") #TODO: FINISH THIS
         elif res_algo == "Vector Space":
-            results = [] #TODO: FINISH THIS
-            print("Vector Space")
+            print("Vector Space") #TODO: FINISH THIS
         elif res_algo == "K-Means":
             results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
         elif res_algo == "Single-Link Agglomerative":
             results = getDocsSingle(q)
         elif res_algo == "Complete-Link Agglomerative":
             results = getDocsComplete(q)
-        else:
-            res_algo = "Google & Bing"
-            results = []
-        
-        # titles = []
-        # for url in results:
-        #     titles.append(re.search('<\W*title\W*(.*)</title', requests.get(url).text, re.IGNORECASE).group(1))
         
         # TODO: REMOVE DEBUG INFO
         print('EXPANSION: ', res_exp)
         print('ALGO: ', res_algo)
-    else:
-        results = []
-        res_algo = "Google & Bing"
-        res_exp = "No"
     
     # Determines Time to Show Results
     elapsedTime = time.perf_counter() - timeStart
