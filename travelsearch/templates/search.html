@@ -2,78 +2,57 @@
 {% block title %}{{title}}{% endblock %}
 {% block content %}
 
-  <!-- Logo / Search Bar / Search Buttons -->
+  <!-- Logo / Search Bar / Options / Search Buttons -->
   <span>
     <img class="logo" src="{{ url_for('static', filename='img/logo.png') }}">
     <form method="POST" action="">
       <input class="search" maxlength="2048" name="query" type="text" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search" value="{{q}}" aria-label="Search">
-      <input class="button" type="submit" name="submit" value="Travel Search"></input>
-      <input class="button" type="submit" name="submit" value="Advanced Search"></input>
+      <select name="algo_select" defaultValue={{res_algo}}>
+        <option value="none">Google & Bing</option>
+        <option value="PageRank">PageRank</option>
+        <option value="HITS">HITS</option>
+        <option value="K-Means">K-Means</option>
+        <option value="Single-Link Agglomerative">Single-Link Agglom</option>
+        <option value="Complete-Link Agglomerative">Complete-Link Agglom</option>
+      </select>
+      <select name="exp_select" defaultValue={{res_exp}}>
+        <option value="none">No Query Expansion</option>
+        <option value="Associative">Associative</option>
+        <option value="Metric">Metric</option>
+        <option value="Scalar">Scalar</option>
+      </select>
+      <input class="button" type="submit" name="submit" value="Travel Search"/>
     </form>
   </span>
 
   <!-- Results Info -->
   <div>
-    <p>Results in {{'%0.4f'| format(time|float)}} seconds</p>
-    <p>Expanded Query: {{ eq }}</p>
+    <p class="result-text">Results in {{'%0.4f'| format(time|float)}} seconds</p>
+    <p class="body">{{res_exp}} Query Expansion: {{ eq }}</p>
+  </div>
+
+  <!-- Results Method -->
+  <div class="Bcontainer">
+    <h2>{{res_algo}}</h2>
   </div>
 
   <!-- Search Results -->
   <div class="results-container row">
     <div class="column">
-    <p>No Clustering</p>
-    {% for result in results1 %}
-      <div class="result"> <!-- TODO: Finalize Schema -->
-        <div href="{{ result['url'] }}" class="result-url">{{ result['url'] }}</div>
-        <a href="{{ result['url'] }}" class="result-title">{{ result['title'] }}</a>
-        <div class="result-text">{{ result['desc'] }}</div>
-      </div>
-    {% endfor %}
-    </div>
-
-    <div class="column">
-    <p>Clustering Method #1</p>
-      {% for result in results2 %}
+      {% for result in results %}
         <div class="result"> <!-- TODO: Finalize Schema -->
           <!-- <div href="{{ result['url'] }}" class="result-url">{{ result['url'] }}</div> -->
+          <a href="{{ result }}" class="result-url">{{ result }}</a>
           <!-- <a href="{{ result['url'] }}" class="result-title">{{ result['title'] }}</a> -->
           <!-- <div class="result-text">{{ result['desc'] }}</div> -->
-          <a href="{{ result }}" class="result-url">{{ result }}</a>
         </div>
       {% endfor %}
       </div>
-
-      <div class="column">
-      <p>Clustering Method #2</p>
-        {% for result in results3 %}
-          <div class="result"> <!-- TODO: Finalize Schema -->
-            <!-- <div href="{{ result['url'] }}" class="result-url">{{ result['url'] }}</div> -->
-            <!-- <a href="{{ result['url'] }}" class="result-title">{{ result['title'] }}</a> -->
-            <!-- <div class="result-text">{{ result['desc'] }}</div> -->
-            <a href="{{ result }}" class="result-url">{{ result }}</a>
-          </div>
-        {% endfor %}
-      </div>
-
-      <div class="column">
-      <p>Clustering Method #3</p>
-        {% for result in results4 %}
-          <div class="result"> <!-- TODO: Finalize Schema -->
-            <!-- <div href="{{ result['url'] }}" class="result-url">{{ result['url'] }}</div> -->
-            <!-- <a href="{{ result['url'] }}" class="result-title">{{ result['title'] }}</a> -->
-            <!-- <div class="result-text">{{ result['desc'] }}</div> -->
-            <a href="{{ result }}" class="result-url">{{ result }}</a>
-          </div>
-        {% endfor %}
-      </div>
   </div>
 
+  <!-- Search Google & Bing -->
+  {% if q != "" %}
+    <iframe width="95%" height="500px" src="http://www.google.com/search?q={{q}}"" title="Google Search"></iframe>
+    <iframe width="95%" height="500px" src="http://www.bing.com/search?q={{q}}"" title="Google Search"></iframe>
+  {% endif %}
 {% endblock %}
-
-<script>
-  handler(a) {
-    return function(e) {
-      console.log('Hello ' + a); // Hello world
-    }
-  }
-  </script>
