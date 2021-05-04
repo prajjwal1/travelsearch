@@ -1,8 +1,10 @@
-
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import json
 from nltk.corpus import stopwords
 import nltk
 from nltk import WordNetLemmatizer
+import numpy as np
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -15,6 +17,7 @@ def preprocess(text):
     """
     tokens = nltk.word_tokenize(text)
     return [lemmatizer.lemmatize(token.lower()) for token in tokens if token]
+
 
 def read_json(dir):
     """
@@ -82,11 +85,45 @@ def load_processed_tokens():
     return page_tokens, ingoing_edges, outgoing_edges, page_ids
 
 
+def load_data_for_elastic_search(dir):
+    with open(dir, 'r') as file:
+        pages = json.loads(file.read())
+    pages_text = {}
+    for page in pages:
+        page_name = page['url_to']
+        text = page['text']
+        pages_text[page_name] = text
+    master_output = []
+    _, ingoing_edges, outgoing_edges, _ = load_processed_tokens()
+    num = 0
+    for page_name in pages_text:
+        page_text = pages_text[page_name]
+        if page_name in ingoing_edges:
+            ingoing_edge = ingoing_edges[page_name]
+        else:
+            ingoing_edge = []
+        if page_name in outgoing_edges:
+            num += 1
+            outgoing_edge = outgoing_edges[page_name]
+        else:
+            outgoing_edge = []
+        master_output.append({'page_name': page_name, 'ingoing_edges': ingoing_edge, 'outgoing_edges': outgoing_edge,
+                              'page_text': page_text})
+    print(num)
+    with open('elastic_search_data.json', 'w') as file:
+        file.write(json.dumps(master_output))
+
+
 def load_stop_words():
     return set(stopwords.words('english'))
+
 
 def normalize(v):
     norm = np.linalg.norm(v)
     if norm == 0:
-       return v
+        return v
     return v / norm
+
+
+if __name__ == '__main__':
+    load_data_for_elastic_search('../crawl/travel.json')
