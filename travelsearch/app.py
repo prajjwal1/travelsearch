@@ -2,12 +2,8 @@ from flask import Flask, abort, redirect, render_template, request, url_for
 import time
 import json
 import sys
-import nltk
 import pickle
 import scipy
-# import json
-# import re
-# import requests
 
 sys.path.append("../clustering")
 from rerankingkmeans import getDocs
@@ -16,28 +12,23 @@ from rerankingSingle import getDocsSingle
 
 app = Flask(__name__)
 
+# Loads Necessary Data for K-Means Calculations
 with open(r'../clustering/kmeans/S.pickle', 'rb') as f:
     kmeansvectors = pickle.load(f)
     kmeansvectors = scipy.sparse.csr_matrix(kmeansvectors)
-
 with open(r'../clustering/kmeans/CL.pickle', 'rb') as f:
     kmeanslabels = pickle.load(f)
     kmeanslabels = kmeanslabels.toarray().ravel()
-
 with open(r'../clustering/kmeans/C.pickle', 'rb') as f:
     kmeanscentroids = pickle.load(f)
     kmeanscentroids = kmeanscentroids.toarray()
-
 with open(r'../clustering/kmeans/idfs.pickle', 'rb') as f:
     kmeansidfs = pickle.load(f) #list 
     kmeansidfs = kmeansidfs.ravel()
-
 with open(r'../clustering/kmeans/terms.json') as f:
     kmeansterms = json.load(f) #list 
-
 with open(r'../clustering/kmeans/urlsKmeans.json') as f:
     kmeansurls = json.load(f) 
-
 
 # New Home Page
 @app.route('/',methods = ['POST', 'GET'])
@@ -122,7 +113,4 @@ def not_found(error):
     return render_template('404.html', title="Page Not Found")
 
 if __name__ == '__main__':
-    #  nltk.download('stopwords')
-    #  nltk.download('punkt')
-    #  nltk.download('wordnet')
     app.run(debug=True)
