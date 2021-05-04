@@ -11,6 +11,8 @@ import pickle
 import numpy as np
 import multiprocessing
 from multiprocessing import Pool, Manager
+from itertools import cycle, islice
+
 
 def check(cluster):
     if len(cluster) < 50:
@@ -117,6 +119,7 @@ def getDocsComplete(query, vectors, labels, centroids, idfs, terms, urls):
             print(list(centroidSim)[:5])
 
             simMap = {}
+            l = list(centroidSim)[:5]
             #if a cluster label == maxSimCluster
             i = 0
             

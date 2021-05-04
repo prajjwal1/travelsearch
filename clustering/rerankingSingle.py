@@ -11,6 +11,8 @@ import pickle
 import numpy as np
 import multiprocessing
 from multiprocessing import Pool, Manager
+from itertools import cycle, islice
+
 
 def check(cluster):
     if len(cluster) < 50:
