@@ -13,6 +13,29 @@ from rerankingSingle import getDocsSingle
 
 app = Flask(__name__)
 
+with open(r'../clustering/kmeans/S.pickle', 'rb') as f:
+    kmeansvectors = pickle.load(f)
+    kmeansvectors = scipy.sparse.csr_matrix(kmeansvectors)
+
+with open(r'../clustering/kmeans/CL.pickle', 'rb') as f:
+    kmeanslabels = pickle.load(f)
+    kmeanslabels = kmeanslabels.toarray().ravel()
+
+with open(r'../clustering/kmeans/C.pickle', 'rb') as f:
+    kmeanscentroids = pickle.load(f)
+    kmeanscentroids = kmeanscentroids.toarray()
+
+with open(r'../clustering/kmeans/idfs.pickle', 'rb') as f:
+    kmeansidfs = pickle.load(f) #list 
+    kmeansidfs = kmeansidfs.ravel()
+
+with open(r'../clustering/kmeans/terms.json') as f:
+    kmeansterms = json.load(f) #list 
+
+with open(r'../clustering/kmeans/urlsKmeans.json') as f:
+    kmeansurls = json.load(f) 
+
+
 # New Home Page
 @app.route('/',methods = ['POST', 'GET'])
 def index():
@@ -57,7 +80,7 @@ def search(q=""):
             results = [] #TODO: FINISH THIS
             print("HITS")
         elif res_algo == "K-Means":
-            results = getDocs(q)
+            results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
         elif res_algo == "Single-Link Agglomerative":
             results = getDocsSingle(q)
         elif res_algo == "Complete-Link Agglomerative":
