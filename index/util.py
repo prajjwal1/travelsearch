@@ -5,6 +5,8 @@ from nltk.corpus import stopwords
 import nltk
 from nltk import WordNetLemmatizer
 import numpy as np
+import requests
+from bs4 import BeautifulSoup
 
 nltk.download('punkt')
 nltk.download('stopwords')
