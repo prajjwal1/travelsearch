@@ -2,6 +2,7 @@ import numpy as np
 from ElasticSearchIndex import Index
 import time
 import requests
+from util import parse_page_html
 from bs4 import BeautifulSoup
 
 class HITS:
@@ -61,12 +62,7 @@ class HITS:
         for site in sites:
             result = {}
             result['url'] = site
-            html_doc = requests.get(site).text
-            soup = BeautifulSoup(html_doc, 'lxml')
-            desc = soup.find("meta", property="og:description")['content']
-            title = soup.find("meta", property="og:title")['content']
-            if len(desc) > 150:
-                desc = desc[0:150]
+            title, desc = parse_page_html(site)
             result['title'] = title
             result['desc'] = desc
             results.append(result)
