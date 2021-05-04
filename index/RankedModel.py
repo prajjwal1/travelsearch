@@ -88,7 +88,7 @@ class RankedModel:
             result = {}
             result['url'] = site
             html_doc = requests.get(site).text
-            soup = BeautifulSoup(html_doc, 'html.parser')
+            soup = BeautifulSoup(html_doc, 'lxml')
             desc = soup.find("meta", property="og:description")['content']
             title = soup.find("meta", property="og:title")['content']
             if len(desc) > 150:

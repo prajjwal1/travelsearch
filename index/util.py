@@ -127,5 +127,29 @@ def normalize(v):
     return v / norm
 
 
+def get_titles_and_description():
+    page_tokens, ingoing_edges, outgoing_edges, page_ids = load_processed_tokens()
+    pages_info = {}
+    for index, page_link in enumerate(page_ids):
+        print('processing doc {}'.format(index))
+        html_doc = requests.get(page_link).text
+        soup = BeautifulSoup(html_doc, 'lxml')
+        desc = soup.find("meta", property="og:description")
+        title = soup.find("meta", property="og:title")
+        if desc is None:
+            desc = "No description available"
+        else:
+            desc = desc['content']
+        if title is None:
+            title = "No title available"
+        else:
+            title = title['content']
+        if len(desc) > 150:
+            desc = desc[0:150]
+        pages_info[page_link] = {'title':title, 'desc': desc}
+    with open('pages_info.json', 'w') as file:
+        file.write(json.dumps(pages_info))
+
 if __name__ == '__main__':
-    load_data_for_elastic_search('../crawl/travel.json')
+    # load_data_for_elastic_search('../crawl/travel.json')
+    get_titles_and_description()

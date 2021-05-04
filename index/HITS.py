@@ -62,7 +62,7 @@ class HITS:
             result = {}
             result['url'] = site
             html_doc = requests.get(site).text
-            soup = BeautifulSoup(html_doc, 'html.parser')
+            soup = BeautifulSoup(html_doc, 'lxml')
             desc = soup.find("meta", property="og:description")['content']
             title = soup.find("meta", property="og:title")['content']
             if len(desc) > 150:
@@ -79,3 +79,4 @@ if __name__ == '__main__':
     hits = HITS(res)
     print(hits.get_result())
     end = time.time()
+    print(end - start)
