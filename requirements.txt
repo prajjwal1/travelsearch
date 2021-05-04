@@ -4,6 +4,8 @@ sklearn
 matplotlib
 nltk
 scipy
+scikit-learn 
+scipy
 
 # Web Crawling & Scraping
 Scrapy ~= 2.4.1
