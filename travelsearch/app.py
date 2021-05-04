@@ -6,17 +6,20 @@ import pickle
 import scipy
 
 sys.path.append("../clustering")
-sys.path.append('../index')
 from rerankingkmeans import getDocs
 from rerankingComplete import getDocsComplete
 from rerankingSingle import getDocsSingle
+
+sys.path.append('../index')
 from ElasticSearchIndex import Index
 from PageRank import PageRank
 from RankedModel import RankedModel
 from HITS import HITS
 from InvertedIndex import InvertedIndex
 
+# Instantiate Things
 app = Flask(__name__)
+index1 = Index()
 
 # Loads Necessary Data for K-Means Calculations
 with open(r'../clustering/kmeans/S.pickle', 'rb') as f:
@@ -72,24 +75,12 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         
         # Gets the Algorithm Choice
         if res_algo == "PageRank":
-            es = Index()
-            res = es.query(q)
-            pr = PageRank(res)
-            results = pr.get_result()
-            print("PageRank")
+            results = PageRank(index1.query(q)).get_result()
         elif res_algo == "HITS":
-            es = Index()
-            res = es.query(q)
-            hits = HITS(res)
-            results = hits.get_result()
-            print("HITS")
+            results = HITS(index1.query(q)).get_result()
         elif res_algo == "Vector Space":
-            es = Index()
-            res = es.query(q)
-            invertedIndex = InvertedIndex(res)
-            model = RankedModel(invertedIndex)
-            results = model.get_result(q, res)
-            print("Vector Space")
+            res = index1.query(q)
+            results = RankedModel(InvertedIndex(res)).get_result(q, res)
         elif res_algo == "K-Means":
             results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
         elif res_algo == "Single-Link Agglomerative":

@@ -4,7 +4,7 @@ import boto3
 import json
 
 def load_credentials():
-    with open('credentials.json', 'r') as file:
+    with open('../credentials.json', 'r') as file:
         return json.loads(file.read())
 
 class Index:
