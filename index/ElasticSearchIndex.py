@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 import boto3
 import json
-import time
+
 def load_credentials():
     with open('credentials.json', 'r') as file:
         return json.loads(file.read())
@@ -27,7 +27,7 @@ class Index:
             connection_class=RequestsHttpConnection
         )
 
-    def query(self, query):
+    def query(self, query, max_queries=50):
         body = {
             'query': {
                 "term": {
@@ -35,7 +35,7 @@ class Index:
                 }
             }
         }
-        result =  self.es.search(index='travel', body=body, size=50)['hits']['hits']
+        result =  self.es.search(index='travel', body=body, size=max_queries)['hits']['hits']
         return [doc['_source'] for doc in result]
 
 if __name__ == '__main__':
