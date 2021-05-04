@@ -125,8 +125,8 @@ footer {
 }
 
 .results-container {
-  padding: 15px 15px 15px 2%;
-  max-width: 98%;
+  padding: 15px 15px 15px 20%;
+  max-width: 80%;
 }
 
 .result {
@@ -164,7 +164,7 @@ footer {
 
 .column {
   float: left;
-  width: 25%;
+  width: 40%;
 }
 
 /* Clear floats after the columns */

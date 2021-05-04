@@ -1,9 +1,11 @@
 from flask import Flask, abort, redirect, render_template, request, url_for
-import json
-import webbrowser
 import time
 import sys
 import nltk
+# import json
+# import re
+# import requests
+
 sys.path.append("../clustering")
 from rerankingkmeans import getDocs
 from rerankingComplete import getDocsComplete
@@ -26,33 +28,60 @@ def search(q=""):
     timeStart = time.perf_counter()
 
     # Sets eq to be the Expanded Query # TODO: Expand Query
-    eq = q
+    eq = q 
 
-    # Gets Results for Column #1
-    results1 = []
-    with open('sampleResults1.json') as f:
-        results1 = json.load(f)  # TODO: Load Real Results
-
-    # Gets Results for Column #2
-    results2 = getDocs(q)
-    
-    # Gets Results for Column #3
-    results3 = getDocsComplete(q)
-
-    # Gets Results for Column #4
-    results4 = getDocsSingle(q)
-    
     # Gets the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
         q = request.form['query']
-        return redirect(url_for('search', q=q))
+        res_algo = request.form['algo_select']
+        res_exp = request.form['exp_select']
+
+        # Gets the Query Expansion Choice
+        if res_exp == "Associative":
+            eq = q #TODO: FINISH THIS
+            print("Associative")
+        elif res_exp == "Metric":
+            eq = q #TODO: FINISH THIS
+            print("Metric")
+        elif res_exp == "Scalar":
+            eq = q #TODO: FINISH THIS
+            print("Scalar")
+        else:
+            res_exp = "No"
+        
+        # Gets the Algorithm Choice
+        if res_algo == "PageRank":
+            results = [] #TODO: FINISH THIS
+            print("PageRank")
+        elif res_algo == "HITS":
+            results = [] #TODO: FINISH THIS
+            print("HITS")
+        elif res_algo == "K-Means":
+            results = getDocs(q)
+        elif res_algo == "Single-Link Agglomerative":
+            results = getDocsSingle(q)
+        elif res_algo == "Complete-Link Agglomerative":
+            results = getDocsComplete(q)
+        else:
+            res_algo = "Google & Bing"
+            results = []
+        
+        # titles = []
+        # for url in results:
+        #     titles.append(re.search('<\W*title\W*(.*)</title', requests.get(url).text, re.IGNORECASE).group(1))
+        
+        # TODO: REMOVE DEBUG INFO
+        print('EXPANSION: ', res_exp)
+        print('ALGO: ', res_algo)
+    else:
+        results = []
+        res_algo = "Google & Bing"
+        res_exp = "No"
     
     # Determines Time to Show Results
     elapsedTime = time.perf_counter() - timeStart
 
-    webbrowser.open('https://www.google.com/search?q=' + q) # Search Google Simulateously
-    webbrowser.open('https://www.bing.com/search?q=' + q)   # Search Bing Simulatenously
-    return render_template('search.html', q=q, eq=eq, title=q, time=elapsedTime, results1=results1, results2=results2, results3=results3, results4=results4)
+    return render_template('search.html', q=q, eq=eq, title=q, time=elapsedTime, results=results, res_algo=res_algo, res_exp= res_exp)
 
 # Handles an Unknown Page
 @app.route('/<unknown_page>')
