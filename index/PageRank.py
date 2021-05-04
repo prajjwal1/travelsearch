@@ -2,6 +2,8 @@ from __future__ import division
 import numpy as np
 from ElasticSearchIndex import Index
 import time
+import requests
+from bs4 import BeautifulSoup
 
 class PageRank:
     def __init__(self, docs):
@@ -53,11 +55,28 @@ class PageRank:
         scores = sorted(scores, key=lambda x: x[1], reverse=True)
         return [score[0] for score in scores][0:10]
 
+    def get_result(self):
+        sites = self.perform_pagerank()
+        results = []
+        for site in sites:
+            result = {}
+            result['url'] = site
+            html_doc = requests.get(site).text
+            soup = BeautifulSoup(html_doc, 'html.parser')
+            desc = soup.find("meta", property="og:description")['content']
+            title = soup.find("meta", property="og:title")['content']
+            if len(desc) > 150:
+                desc = desc[0:150]
+            result['title'] = title
+            result['desc'] = desc
+            results.append(result)
+        return results
+
 if __name__ == '__main__':
     start = time.time()
     es = Index()
     res = es.query('japan', 50)
     pr = PageRank(res)
-    scores = pr.perform_pagerank()
-    print(scores)
+    pr.get_result()
     end = time.time()
+    print(end-start)
