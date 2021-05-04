@@ -1,7 +1,10 @@
 from flask import Flask, abort, redirect, render_template, request, url_for
 import time
+import json
 import sys
 import nltk
+import pickle
+import scipy
 # import json
 # import re
 # import requests
@@ -119,7 +122,7 @@ def not_found(error):
     return render_template('404.html', title="Page Not Found")
 
 if __name__ == '__main__':
-    nltk.download('stopwords')
-    nltk.download('punkt')
-    nltk.download('wordnet')
+    #  nltk.download('stopwords')
+    #  nltk.download('punkt')
+    #  nltk.download('wordnet')
     app.run(debug=True)

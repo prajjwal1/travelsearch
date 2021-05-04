@@ -1,10 +1,13 @@
 import json
 from nltk.tokenize import word_tokenize
 from collections import Counter
-import pandas as pd
+#  import pandas as pd
+import multiprocessing
+from multiprocessing import Pool
+#  from joblib import Parallel, delayed
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
+#  import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import MiniBatchKMeans
 from datetime import datetime
@@ -26,7 +29,6 @@ def check(cluster):
 def roundrobin(*iterables):
     num_active = len(iterables)
     nexts = cycle(iter(it).__next__ for it in iterables)
-    
     while num_active:
         try:
             for next in nexts:
@@ -35,6 +37,11 @@ def roundrobin(*iterables):
             num_active -= 1
             nexts = cycle(islice(nexts, num_active))
 
+#  maxSim = 0
+#  maxSimCluster = 0 # the cluster id that is closest the query
+#  maxSimCluster2 = 0
+#  i = -1 #cluster id
+#  centroidSim = {}
 
 #function that takes the query and returns the list of document urls
 def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
@@ -54,21 +61,20 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
     queryVector = vectorizer.fit_transform(queryList) #document - term matrix 
     queryVector = queryVector.toarray()
 
-    
     # with open(r'../clustering/kmeans/idfs.pickle', 'rb') as f:
         # idfs = pickle.load(f) #list 
         # idfs = idfs.ravel()
 
     for i in range (np.shape(queryVector)[1]):
-         #testing purposes to see where the term is in the dictionary
-        if queryVector[0,i] != 0:    
-            print(queryVector[0,i], "index : ", i, "term: ", terms[i], "idf: " , idfs[i])
+         # testing purposes to see where the term is in the dictionary
+        #  if queryVector[0,i] != 0:
+            #  print(queryVector[0,i], "index : ", i, "term: ", terms[i], "idf: " , idfs[i])
 
-        #muliply the tf with the idf 
+        # muliply the tf with the idf 
         queryVector[0,i] = queryVector[0,i] * idfs[i]
 
-        if queryVector[0,i] != 0:    
-            print(queryVector[0,i], "index : ", i, "term: ", terms[i], "idf: " , idfs[i])
+        #  if queryVector[0,i] != 0:
+            #  print(queryVector[0,i], "index : ", i, "term: ", terms[i], "idf: " , idfs[i])
 
 
     #get the cluster centroids
@@ -77,26 +83,46 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
     #     centroids = centroids.toarray()
 
     #compare the query to each centroid and find the closest one (highest score)
-    centroidSim = {}
-    maxSim = 0
-    maxSimCluster = 0 # the cluster id that is closest the query
-    maxSimCluster2 = 0
-    i = -1 #cluster id
-    for centroid in centroids:
-        i = i + 1
-        sim = cosineSim(queryVector, centroid.reshape(1,-1))
-        centroidSim.update({i : sim})
+#      maxSim = 0
+    #  maxSimCluster = 0 # the cluster id that is closest the query
+    #  maxSimCluster2 = 0
+    #  i = -1 #cluster id
+    #  centroidSim = {}
 
-        if sim > maxSim:
-            maxSim = sim
-            maxSimCluster2 = maxSimCluster
-            maxSimCluster = i
-            
-    centroidSim = OrderedDict(sorted(centroidSim.items(), key=lambda x: x[1], reverse=True)) 
-    print("Cluster1: ", maxSimCluster, "Cluster2: ", maxSimCluster2)
+    class Centroid_m():
+        def __init__(self, centroids, queryvector):
+            self.centroidSim = {}
+            self.centroids = centroids
+            self.queryVector = queryvector
+            self.num_cores = multiprocessing.cpu_count()
+
+
+        def getCentroidSim(self):
+            global getCentroid
+
+            def getCentroid(centroid_idx):
+                centroid_el = self.centroids[centroid_idx]
+                #  print(self.centroids.shape)
+                #  print(centroid_el)
+                for i, centroid in enumerate(centroid_el):
+                    #  print(self.queryVector.shape, centroid.shape)
+                    sim = cosineSim(self.queryVector, centroid.reshape(1, -1))
+                    self.centroidSim.update({i : sim})
+
+            with Pool(self.num_cores) as p:
+                p.map(getCentroid, list(range(512)))
+
+
+    centroid_comp = Centroid_m(centroids, queryVector)
+    centroid_comp.getCentroidSim()
+
+    #  _ = Parallel(n_jobs=num_cores)(delayed(centroid_comp.getCentroidSim)(k_val) for k_val in range(len(centroid_comp.centroids)))
+   
+    centroidSim = OrderedDict(sorted(centroid_comp.centroidSim.items(), key=lambda x: x[1], reverse=True)) 
+    #  print("Cluster1: ", maxSimCluster, "Cluster2: ", maxSimCluster2)
 
     #now compare the docuements in the cluster to the query and rank them
-    
+
     #get the cluster labels
     # with open(r'../clustering/kmeans/CL.pickle', 'rb') as f:
     #     labels = pickle.load(f)
@@ -118,15 +144,15 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
     #for i in range(5):
     
     cluster1 = check(np.where(labels == l[0])[0])
-    print(cluster1)
+    #  print(cluster1)
     cluster2 = check(np.where(labels == l[1])[0])
-    print(cluster2)
+    #  print(cluster2)
     cluster3 = check(np.where(labels == l[2])[0])
-    print(cluster3)
+    #  print(cluster3)
     cluster4 = check(np.where(labels == l[3])[0])
-    print(cluster4)
+    #  print(cluster4)
     cluster5 = check(np.where(labels == l[4])[0])
-    print(cluster5)
+    #  print(cluster5)
 
 
     mylist = [cluster1, cluster2, cluster3, cluster4, cluster5]
@@ -140,7 +166,7 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
         sim = cosineSim(queryVector, vectors.getrow(element).toarray())
         simMap.update({element : sim})
         count +=1
-        if count == 1000:
+        if count == 100:
             break
     '''       
     for data1, data2, data3 in zip(cluster1, cluster2, cluster3):
