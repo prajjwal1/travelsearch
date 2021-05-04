@@ -73,6 +73,9 @@ def search(q=""):
         elif res_algo == "HITS":
             results = [] #TODO: FINISH THIS
             print("HITS")
+        elif res_algo == "Vector Space":
+            results = [] #TODO: FINISH THIS
+            print("Vector Space")
         elif res_algo == "K-Means":
             results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
         elif res_algo == "Single-Link Agglomerative":
