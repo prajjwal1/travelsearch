@@ -161,3 +161,15 @@ footer {
   font-size: 14px;
   color: #4d5156;
 }
+
+.column {
+  float: left;
+  width: 40%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
