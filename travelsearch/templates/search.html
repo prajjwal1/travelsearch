@@ -9,19 +9,19 @@
       <input class="search" maxlength="2048" name="query" type="text" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search" value="{{q}}" aria-label="Search">
       <select name="algo_select" defaultValue={{res_algo}}>
         <option value="Google & Bing">Google & Bing</option>
-        <option value="PageRank">PageRank</option>
-        <option value="HITS">HITS</option>
-        <option value="Vector Space">Vector Space</option>
-        <option value="K-Means">K-Means</option>
-        <option value="Single-Link Agglomerative">Single-Link Agglom</option>
-        <option value="Complete-Link Agglomerative">Complete-Link Agglom</option>
+        {% if res_algo == "PageRank" %}<option value="PageRank" selected>PageRank</option>{% else %}<option value="PageRank">PageRank</option>{% endif %}
+        {% if res_algo == "HITS" %}<option value="HITS" selected>HITS</option>{% else %}<option value="HITS">HITS</option>{% endif %}
+        {% if res_algo == "Vector Space" %}<option value="Vector Space" selected>Vector Space</option>{% else %}<option value="Vector Space">Vector Space</option>{% endif %}
+        {% if res_algo == "K-Means" %}<option value="K-Means" selected>K-Means</option>{% else %}<option value="K-Means">K-Means</option>{% endif %}
+        {% if res_algo == "Single-Link Agglomerative" %}<option value="Single-Link Agglomerative" selected>Single-Link Agglom</option>{% else %}<option value="Single-Link Agglomerative">Single-Link Agglom</option>{% endif %}
+        {% if res_algo == "Complete-Link Agglomerative" %}<option value="Complete-Link Agglomerative" selected>Complete-Link Agglom</option>{% else %}<option value="Complete-Link Agglomerative">Complete-Link Agglom</option>{% endif %}
       </select>
-      <select name="exp_select" defaultValue={{res_exp}}>
+      <select name="exp_select">
         <option value="No">No Query Expansion</option>
-        <option value="Associative">Associative</option>
-        <option value="Metric">Metric</option>
-        <option value="Scalar">Scalar</option>
-        <option value="Rocchio">Rocchio</option>
+        {% if res_exp == "Associative" %}<option value="Associative" selected>Associative</option>{% else %}<option value="Associative">Associative</option>{% endif %}
+        {% if res_exp == "Metric" %}<option value="Metric" selected>Metric</option>{% else %}<option value="Metric">Metric</option>{% endif %}
+        {% if res_exp == "Scalar" %}<option value="Scalar" selected>Scalar</option>{% else %}<option value="Scalar">Scalar</option>{% endif %}
+        {% if res_exp == "Rocchio" %}<option value="Rocchio" selected>Rocchio</option>{% else %}<option value="Rocchio">Rocchio</option>{% endif %}
       </select>
       <input class="button" type="submit" name="submit" value="Travel Search"/>
     </form>
@@ -45,7 +45,7 @@
       <div class="result">
         <a href="{{result}}" class="result-url">{{result['url']}}</a>
         <div><a href="{{result['url']}}" class="result-title">{{result['title']}}</a></div>
-        <div class="result-text">{{result['desc']}}</div>
+        <div class="result-text">{{result['desc']}}...</div>
       </div>
     {% endfor %}
   </div>
