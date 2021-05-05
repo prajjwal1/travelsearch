@@ -84,7 +84,7 @@ def association_main(query, data):
 		continue
 	query += ' '+str(association_list[i][0])
         i +=1
-    return(query)
+    return query
 
-if __name__ == "__main__":
-  association_main()
+#if __name__ == "__main__":
+  #association_main()
