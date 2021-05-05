@@ -140,27 +140,31 @@ def get_titles_and_description():
             for task in as_completed(processes):
                 print('Finished Processing Doc {}'.format(count))
                 count += 1
-                html_doc, page_link = task.result()
-                soup = BeautifulSoup(html_doc, 'lxml')
-                desc = soup.find("meta", property="og:description")
-                title = soup.find("meta", property="og:title")
-                if desc is None:
-                    desc = "No description available"
-                else:
-                    desc = desc['content']
-                if title is None:
-                    title = "No title available"
-                else:
-                    title = title['content']
-                if len(desc) > 150:
-                    desc = desc[0:150]
-                file.write(json.dumps({'title': title, 'desc': desc}))
+                try:
+                    html_doc, page_link = task.result()
+                    soup = BeautifulSoup(html_doc, 'lxml')
+                    desc = soup.find("meta", property="og:description")
+                    title = soup.find("meta", property="og:title")
+                    if desc is None:
+                        desc = "No description available"
+                    else:
+                        desc = desc['content']
+                    if title is None:
+                        title = "No title available"
+                    else:
+                        title = title['content']
+                    if len(desc) > 150:
+                        desc = desc[0:150]
+                    file.write(json.dumps({'title': title, 'desc': desc}))
+                except Exception as exc:
+                    print('%r generated an exception: %s' % (url, exc))
+
 
 
 
 
 def multithread_process(page):
-    html_doc = requests.get(page).text
+    html_doc = session.get(page).text
     return html_doc, page
 
 
@@ -199,6 +203,39 @@ def get_page_text(dir):
     with open('pages_text.json', 'w') as file:
         file.write(json.dumps(pages_text))
 
+def get_result(sites):
+    processes = []
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        for url in sites:
+            processes.append(executor.submit(multithread_process, url))
+        count = 0
+        data = {}
+        for task in as_completed(processes):
+            count += 1
+            try:
+                html_doc, page_link = task.result()
+                soup = BeautifulSoup(html_doc, 'lxml')
+                desc = soup.find("meta", property="og:description")
+                title = soup.find("meta", property="og:title")
+                if desc is None:
+                    desc = "No description available"
+                else:
+                    desc = desc['content']
+                if title is None:
+                    title = "No title available"
+                else:
+                    title = title['content']
+                if len(desc) > 150:
+                    desc = desc[0:150]
+                data[page_link] = {'url': page_link, 'title':title, 'desc': desc}
+            except Exception as exc:
+                print('%r generated an exception: %s' % (url, exc))
+                return [{'url': url, 'title':"No Title Available", 'desc':'No Description Available'} for url in sites]
+    docs = []
+    # maintain the sorted order
+    for site in sites:
+        docs.append(data[site])
+    return docs
 
 if __name__ == '__main__':
     # load_data_for_elastic_search('../crawl/travel.json')

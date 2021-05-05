@@ -2,12 +2,10 @@ from __future__ import division
 from ElasticSearchIndex import Index
 from InvertedIndex import InvertedIndex
 from math import log10
-from util import normalize, parse_page_html
+from util import normalize, get_result
 import numpy as np
 from collections import Counter
 import time
-import requests
-from bs4 import BeautifulSoup
 
 
 class RankedModel:
@@ -83,15 +81,7 @@ class RankedModel:
 
     def get_result(self, query, docs):
         sites = self.query(query, docs)
-        results = []
-        for site in sites:
-            result = {}
-            result['url'] = site
-            title, desc = parse_page_html(site)
-            result['title'] = title
-            result['desc'] = desc
-            results.append(result)
-        return results
+        return get_result(sites)
 
 if __name__ == '__main__':
     start = time.time()
