@@ -134,11 +134,50 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
             #results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
             results = kmeansWrong(pages_text, eq, index1.query(eq))
         elif res_algo == "Single-Link Agglomerative":
-            #results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
             results = singleWrong(pages_text, eq, index1.query(eq))
+            if len(results) < 10:
+                res = index1.query(q)[50:]
+                results = RankedModel(InvertedIndex(res)).get_result(q, res)
         elif res_algo == "Complete-Link Agglomerative":
-            #results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
             results = completeWrong(pages_text, eq, index1.query(eq))
+            if len(results) < 10:
+                res = index1.query(q)[1:85]
+                results = RankedModel(InvertedIndex(res)).get_result(q, res)
+
+        # Gets the Query Expansion Choice
+        if res_exp == "Associative":
+            query_expansion_input = []
+            for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+            results = association_main(q, query_expansion_input)
+            eq = q  # TODO: FINISH THIS
+        elif res_exp == "Metric":
+            query_expansion_input = []
+            for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+            results =  metric_cluster_main(q, query_expansion_input)           
+            eq = q  # TODO: FINISH THIS
+        elif res_exp == "Scalar":
+            query_expansion_input = []
+            for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+            results =  scalar_main(q, query_expansion_input)             
+            eq = q  # TODO: FINISH THIS
+        else:
+            eq = q
+
+        # TODO: REMOVE DEBUG INFO
+        print('ALGO: ', res_algo)
+        print('EXPANSION: ', res_exp)
 
     return render_template('search.html', q=q, eq=eq, title=q, time=time.perf_counter()-timeStart, results=results, res_algo=res_algo, res_exp=res_exp)
 
