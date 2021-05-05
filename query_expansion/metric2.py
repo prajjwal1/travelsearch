@@ -225,7 +225,10 @@ def metric_cluster_main(query, data):
     #query = 'guest rooms'
     metric_clusters = get_metric_clusters(tokens_map, stem_map, query)
     metric_clusters2 = [elem for cluster in metric_clusters for elem in cluster]
-    metric_clusters2.sort(key=lambda x:x.value,reverse=True)
+    try:
+        metric_clusters2.sort(key=lambda x:x.value,reverse=True)
+    except:
+        return query
     i=0;
     while(i<3):
         if(str(metric_clusters2[i].v) == ""):
@@ -236,5 +239,5 @@ def metric_cluster_main(query, data):
     return query
     #pprint.pprint(list1)
   
-if __name__ == "__main__":
-  metric_cluster_main()
+#if __name__ == "__main__":
+  #metric_cluster_main()
