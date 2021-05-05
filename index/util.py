@@ -219,7 +219,11 @@ def get_result(sites):
                 desc = soup.find("meta", property="og:description")
                 title = soup.find("meta", property="og:title")
                 if desc is None:
-                    desc = "No description available"
+                    paragraph = soup.find("p")
+                    if paragraph is None:
+                        "No description is not available"
+                    else:
+                        desc = paragraph.text[0:150]
                 else:
                     desc = desc['content']
                 if title is None:
@@ -243,7 +247,7 @@ if __name__ == '__main__':
     # load_data_for_elastic_search('../crawl/travel.json')
     # get_titles_and_description()
     start = time.time()
-    print(get_result(['https://www.thrillophilia.com/cities/geneva']))
+    print(get_result(['https://www.thrillophilia.com/cities/geneva', 'http://www.google.com']))
     end = time.time()
     print(end-start)
     # get_page_text('../crawl/travel.json')
