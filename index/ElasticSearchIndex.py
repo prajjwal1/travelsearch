@@ -5,7 +5,7 @@ import json
 import time
 
 def load_credentials():
-    with open('../credentials.json', 'r') as file:
+    with open('../index/credentials.json', 'r') as file:
         return json.loads(file.read())
 
 class Index:
