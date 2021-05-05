@@ -57,9 +57,13 @@ def completeWrong(pages_text, query, results):
         docs.append(pages_text[result['page_name']]) 
         count = count + 1   
 
+    if len(docs) == 0: 
+        return []
+
     vectorizer = TfidfVectorizer(stop_words=stopwords.words('english'), sublinear_tf=True)
     vectors = vectorizer.fit_transform(docs) #document - term matrix 
     terms = vectorizer.get_feature_names()
+
 
     queryList = []
     queryList.append(query)

@@ -52,6 +52,9 @@ def singleWrong(pages_text, query, results):
         urls.append(result['page_name'])
         docs.append(pages_text[result['page_name']])    
 
+    if len(docs) == 0: 
+        return []
+        
     vectorizer = TfidfVectorizer(stop_words=stopwords.words('english'), sublinear_tf=True)
     vectors = vectorizer.fit_transform(docs) #document - term matrix 
     terms = vectorizer.get_feature_names()
