@@ -25,7 +25,7 @@ from InvertedIndex import InvertedIndex
 # Instantiate Things
 app = Flask(__name__)
 index1 = Index()
-stopWords = ["a", "as", "at", "about", "after", "all", "also", "an", "and", "any", "are", "arent", "as", "be", "been", "both", "but", "by", "can", "de", "during", "el", "few", "for", "from", "has", "have", "he", "her", "here", "him", "his", "how", "i", "in", "is", "it", "its", "la", "many", "me", "more", "my", "none", "of", "on", "or", "our", "she", "since", "some", "the", "their", "them", "there", "these", "they", "than", "that", "this", "to", "us", "was", "what", "when", "where", "whereas", "which", "while", "who", "why", "will", "with", "you", "your"]
+stopWords = ["a", "as", "at", "about", "after", "all", "also", "an", "and", "any", "are", "arent", "as", "be", "been", "both", "but", "by", "can", "de", "during", "el", "few", "for", "from", "has", "have", "he", "her", "here", "him", "his", "how", "i", "in", "is", "it", "its", "la", "many", "me", "more", "my", "no", "none", "of", "on", "or", "our", "she", "since", "some", "the", "their", "them", "there", "these", "they", "than", "that", "this", "to", "us", "was", "what", "when", "where", "whereas", "which", "while", "who", "why", "will", "with", "you", "your"]
 
 # Loads Necessary Data for K-Means Calculations
 with open(r'../clustering/kmeans/S.pickle', 'rb') as f:
