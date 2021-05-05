@@ -20,6 +20,9 @@ import scipy
 import pickle
 from itertools import cycle, islice
 from bs4 import BeautifulSoup
+import sys
+sys.path.append("../index")
+from util import parse_page_html
 
 def check(cluster):
     if len(cluster) < 50:
@@ -199,12 +202,8 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
             for index, score in simMap.items(): #add the top 1000 docs in the cluster to the list to send to UI
                 result = {}
                 result['url'] = urls[index]
-                html_doc = requests.get(urls[index]).text
-                soup = BeautifulSoup(html_doc, 'html.parser')
-                desc = soup.find("meta", property="og:description")['content']
-                title = soup.find("meta", property="og:title")['content']
-                if len(desc) > 150:
-                    desc = desc[0:150]
+                title, desc = parse_page_html(urls[index])
+              
                 result['title'] = title
                 result['desc'] = desc
                 returnDocs.append(result)
@@ -223,6 +222,5 @@ def cosineSim(queryVector, CDVector):
 
     return dotProduct
 
-
-startTime = datetime.now()
 # print(getDocs("san diego"))
+
