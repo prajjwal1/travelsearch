@@ -63,15 +63,15 @@ def fakeQE(results, q, num=0):
     qLow = q.lower()
     procQ = qLow.split()
     desc = ""
-    for cur in results:
+
+    for cur in PageRank(index1.query(q)).get_result():
         if cur['desc'] != "No description available":
             desc += " " + cur['desc']
         if " " in cur['title']:
             desc += " " + cur['title']
 
     res = index1.query(q)
-    results2 = RankedModel(InvertedIndex(res)).get_result(q, res)
-    for cur in results2:
+    for cur in RankedModel(InvertedIndex(res)).get_result(q, res):
         if cur['desc'] != "No description available":
             desc += " " + cur['desc']
         desc += " " + cur['title']
@@ -108,24 +108,6 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         res_algo = request.form['algo_select']
         res_exp = request.form['exp_select']
         
-        # Gets the Algorithm Choice
-        if res_algo == "PageRank":
-            results = PageRank(index1.query(q)).get_result()
-        elif res_algo == "HITS":
-            results = HITS(index1.query(q)).get_result()
-        elif res_algo == "Vector Space":
-            res = index1.query(q)
-            results = RankedModel(InvertedIndex(res)).get_result(q, res)
-        elif res_algo == "K-Means":
-            #results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
-            results = kmeansWrong(pages_text, q, index1.query(q))
-        elif res_algo == "Single-Link Agglomerative":
-            #results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
-            results = singleWrong(pages_text, q, index1.query(q))
-        elif res_algo == "Complete-Link Agglomerative":
-            #results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
-            results = completeWrong(pages_text, q, index1.query(q))
-
         # Gets the Query Expansion Choice
         if res_exp == "Associative":
             eq = fakeQE(results, q, 0)
@@ -139,6 +121,24 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
                 i += 1  # LMAO
         else:
             eq = q
+
+        # Gets the Algorithm Choice
+        if res_algo == "PageRank":
+            results = PageRank(index1.query(eq)).get_result()
+        elif res_algo == "HITS":
+            results = HITS(index1.query(eq)).get_result()
+        elif res_algo == "Vector Space":
+            res = index1.query(eq)
+            results = RankedModel(InvertedIndex(res)).get_result(eq, res)
+        elif res_algo == "K-Means":
+            #results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
+            results = kmeansWrong(pages_text, eq, index1.query(eq))
+        elif res_algo == "Single-Link Agglomerative":
+            #results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
+            results = singleWrong(pages_text, eq, index1.query(eq))
+        elif res_algo == "Complete-Link Agglomerative":
+            #results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
+            results = completeWrong(pages_text, eq, index1.query(eq))
 
     return render_template('search.html', q=q, eq=eq, title=q, time=time.perf_counter()-timeStart, results=results, res_algo=res_algo, res_exp=res_exp)
 
