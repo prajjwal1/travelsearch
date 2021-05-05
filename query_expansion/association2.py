@@ -51,13 +51,13 @@ def build_association(id_token_map, vocab, query):
     return association_list
 
 	
-def association_main():
+def association_main(query, data):
     #stop_words = set(stopwords.words('english'))
-    with open("../data/travel.json", "r") as read_file:
-      data = json.load(read_file)
-    with open('stopwords', 'r') as filehandle:
+    #with open("../data/travel.json", "r") as read_file:
+      #data = json.load(read_file)
+    with open('../query_expansion/stopwords', 'r') as filehandle:
       stop_words = filehandle.read().split()
-    query = 'guest rooms'
+    #query = 'guest rooms'
     # solr = pysolr.Solr('http://localhost:8983/solr/nutch/', always_commit=True, timeout=10)
     # results = get_results_from_solr(query, solr)
     tokens = []
@@ -67,10 +67,10 @@ def association_main():
     document_ids = []
     #print(data)
     for result in data:
-        print(result)
-        tokens_this_document = tokenize_doc(result['text'], stop_words)
+        #print(result)
+        tokens_this_document = tokenize_doc(result['desc'], stop_words)
         #print(tokens_this_document)
-        tokens_map[result['url_to']] = tokens_this_document
+        tokens_map[result['url']] = tokens_this_document
         tokens.append(tokens_this_document)
 
     vocab = set([token for tokens_this_doc in tokens for token in tokens_this_doc])
@@ -80,9 +80,11 @@ def association_main():
     # pprint.pprint(association_list)
     i=2;
     while(i<5):
-        query += ' '+str(association_list[i][0])
+        if(str(association_list[i][0]) == ""):
+		continue
+	query += ' '+str(association_list[i][0])
         i +=1
-    print(query)
+    return(query)
 
 if __name__ == "__main__":
   association_main()
