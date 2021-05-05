@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 
 lemmatizer = WordNetLemmatizer()
-
+session = requests.Session()
 def preprocess(text):
     """"
     Preprocess text to generate tokens by tokenizing and lemmatizing the text using WordNet
@@ -125,9 +125,11 @@ def normalize(v):
 
 
 def get_titles_and_description():
-    page_tokens, ingoing_edges, outgoing_edges, page_ids = load_processed_tokens()
+    with open('../crawl/travel.json', 'r') as file:
+        pages = json.loads(file.read())
     pages_info = {}
-    for index, page_link in enumerate(page_ids):
+    for index, page in enumerate(pages):
+        page_link = page['url_to']
         print('processing doc {}'.format(index))
         html_doc = requests.get(page_link).text
         soup = BeautifulSoup(html_doc, 'lxml')
@@ -148,7 +150,7 @@ def get_titles_and_description():
         file.write(json.dumps(pages_info))
 
 def parse_page_html(page_link):
-    html_doc = requests.get(page_link).text
+    html_doc = session.get(page_link).text
     soup = BeautifulSoup(html_doc, 'lxml')
     desc = soup.find("meta", property="og:description")
     title = soup.find("meta", property="og:title")
@@ -164,6 +166,24 @@ def parse_page_html(page_link):
         desc = desc[0:150]
     return title, desc
 
+def get_page_text(dir):
+    """
+    Read json to get tokens and the page links
+    """
+    # contains tokens for all docs
+    pages_text = {}
+
+    with open(dir, 'r') as file:
+        pages = json.loads(file.read())
+    for page in pages:
+        page_name = page['url_to']
+        text = page['text']
+        pages_text[page_name] = text
+    print(len(pages))
+    with open('pages_text.json', 'w') as file:
+        file.write(json.dumps(pages_text))
+
 if __name__ == '__main__':
     # load_data_for_elastic_search('../crawl/travel.json')
     get_titles_and_description()
+    # get_page_text('../crawl/travel.json')
