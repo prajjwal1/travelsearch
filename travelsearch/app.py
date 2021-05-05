@@ -11,6 +11,9 @@ sys.path.append("../clustering")
 from rerankingkmeans import getDocs
 from rerankingComplete import getDocsComplete
 from rerankingSingle import getDocsSingle
+from kmeansWrong import kmeansWrong
+from completeWrong import completeWrong
+from singleWrong import singleWrong
 
 sys.path.append('../index')
 from ElasticSearchIndex import Index
@@ -26,31 +29,47 @@ stopWords = ["a", "about", "after", "all", "also", "an", "and", "any", "are", "a
 
 # Loads Necessary Data for K-Means Calculations
 with open(r'../clustering/kmeans/S.pickle', 'rb') as f:
-    kmeansvectors = scipy.sparse.csr_matrix(pickle.load(f))
+    kmeansvectors = pickle.load(f)
+    kmeansvectors = scipy.sparse.csr_matrix(kmeansvectors)
 with open(r'../clustering/kmeans/CL.pickle', 'rb') as f:
-    kmeanslabels = pickle.load(f).toarray().ravel()
+    kmeanslabels = pickle.load(f)
+    kmeanslabels = kmeanslabels.toarray().ravel()
 with open(r'../clustering/kmeans/C.pickle', 'rb') as f:
-    kmeanscentroids = pickle.load(f).toarray()
+    kmeanscentroids = pickle.load(f)
+    kmeanscentroids = kmeanscentroids.toarray()
 with open(r'../clustering/kmeans/idfs.pickle', 'rb') as f:
-    kmeansidfs = pickle.load(f).ravel()
+    kmeansidfs = pickle.load(f) #list 
+    kmeansidfs = kmeansidfs.ravel()
 with open(r'../clustering/kmeans/terms.json') as f:
-    kmeansterms = json.load(f)
+    kmeansterms = json.load(f) #list 
 with open(r'../clustering/kmeans/urlsKmeans.json') as f:
     kmeansurls = json.load(f) 
+
 with open(r'../clustering/complete/urlsAgg.json') as f:
-    aggurls = json.load(f)
+    aggurls = json.load(f) #list
+
 with open(r'../clustering/complete/termsAgg.json') as f:
-    aggterms = json.load(f)
+    aggterms = json.load(f) #list
+
 with open(r'../clustering/complete/idfsAgg.pickle', 'rb') as f:
-    aggidfs = pickle.load(f).ravel()
+    aggidfs = pickle.load(f) #list 
+    aggidfs =aggidfs.ravel()
+
 with open(r'../clustering/complete/CAgg.pickle', 'rb') as f:
-    completecentroids = pickle.load(f).toarray()
+    completecentroids = pickle.load(f)
+    completecentroids = completecentroids.toarray()
 with open(r'../clustering/complete/CLAgg.pickle', 'rb') as f:
-    completelabels = pickle.load(f).toarray().ravel()
+    completelabels = pickle.load(f)
+    completelabels = completelabels.toarray().ravel()
+
 with open(r'../clustering/complete/AggVectors.pickle', 'rb') as f:
-    aggvectors = scipy.sparse.csr_matrix(pickle.load(f))
+    aggvectors = pickle.load(f)
+    aggvectors = scipy.sparse.csr_matrix(aggvectors)
+
 with open(r'../clustering/single/CAggSingle.pickle', 'rb') as f:
-    singlecentroids = pickle.load(f).toarray()
+    singlecentroids = pickle.load(f)
+    singlecentroids = singlecentroids.toarray()
+
 with open(r'../clustering/single/CLAggSingle.pickle', 'rb') as f:
     singlelabels = pickle.load(f).toarray().ravel()
 
@@ -110,11 +129,14 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
             res = index1.query(q)
             results = RankedModel(InvertedIndex(res)).get_result(q, res)
         elif res_algo == "K-Means":
-            results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
+            #results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
+            results = kmeansWrong(pages_text, q, index1.query(q))
         elif res_algo == "Single-Link Agglomerative":
-            results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
+            #results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
+            results = singleWrong(pages_text, q, index1.query(q))
         elif res_algo == "Complete-Link Agglomerative":
-            results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
+            #results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
+            results = completeWrong(pages_text, q, index1.query(q))
 
         # Gets the Query Expansion Choice
         if res_exp == "Associative":

@@ -198,15 +198,17 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
                     simMap.update({i : sim}) 
             '''
             
-        simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
+    simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
             #sort the scores and the for the top 1000, get the indexes (keys)
             #enter those keys into the url list
 
-        returnDocs = []
-        j = 0
-        indices = list(simMap.keys())[0:num_docs]
-        sites = [urls[index] for index in indices]
-        returnDocs = get_result(sites)
+        #global returnDocs
+    returnDocs = []
+    j = 0
+    indices = list(simMap.keys())[0:num_docs]
+    sites = [urls[index] for index in indices]
+    returnDocs = get_result(sites)
+    #returnDocs.append(get_results(sites))
             # for index, score in simMap.items(): #add the top 1000 docs in the cluster to the list to send to UI
             #     result = {}
             #     result['url'] = urls[index]
@@ -231,4 +233,5 @@ def cosineSim(queryVector, CDVector):
     return dotProduct
 
 # print(getDocs("san diego"))
+
 
