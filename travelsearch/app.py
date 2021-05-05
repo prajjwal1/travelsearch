@@ -106,6 +106,7 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
             results = association_main(q, query_expansion_input)
             eq = q  # TODO: FINISH THIS
         elif res_exp == "Metric":
+             query_expansion_input = []
              for result in results:
                 input_dict = {}
                 input_dict['url'] = result['url']
@@ -114,6 +115,7 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
              results =  metric_cluster_main(q, query_expansion_input)           
             eq = q  # TODO: FINISH THIS
         elif res_exp == "Scalar":
+            query_expansion_input = []
             for result in results:
                 input_dict = {}
                 input_dict['url'] = result['url']
