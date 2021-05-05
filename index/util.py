@@ -221,7 +221,7 @@ def get_result(sites):
                 if desc is None:
                     paragraph = soup.find("p")
                     if paragraph is None:
-                        desc = "No description is not available"
+                        desc = "No description available"
                     else:
                         desc = paragraph.text[0:150]
                 else:
