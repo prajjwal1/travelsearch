@@ -8,9 +8,9 @@ import re
 from collections import Counter
 
 sys.path.append("../clustering")
-from rerankingkmeans import getDocs
-from rerankingComplete import getDocsComplete
-from rerankingSingle import getDocsSingle
+# from rerankingkmeans import getDocs
+# from rerankingComplete import getDocsComplete
+# from rerankingSingle import getDocsSingle
 from kmeansWrong import kmeansWrong
 from completeWrong import completeWrong
 from singleWrong import singleWrong
@@ -29,49 +29,35 @@ stopWords = ["a", "about", "after", "all", "also", "an", "and", "any", "are", "a
 
 # Loads Necessary Data for K-Means Calculations
 with open(r'../clustering/kmeans/S.pickle', 'rb') as f:
-    kmeansvectors = pickle.load(f)
-    kmeansvectors = scipy.sparse.csr_matrix(kmeansvectors)
+    kmeansvectors = scipy.sparse.csr_matrix(pickle.load(f))
 with open(r'../clustering/kmeans/CL.pickle', 'rb') as f:
-    kmeanslabels = pickle.load(f)
-    kmeanslabels = kmeanslabels.toarray().ravel()
+    kmeanslabels = pickle.load(f).toarray().ravel()
 with open(r'../clustering/kmeans/C.pickle', 'rb') as f:
-    kmeanscentroids = pickle.load(f)
-    kmeanscentroids = kmeanscentroids.toarray()
+    kmeanscentroids = pickle.load(f).toarray()
 with open(r'../clustering/kmeans/idfs.pickle', 'rb') as f:
-    kmeansidfs = pickle.load(f) #list 
-    kmeansidfs = kmeansidfs.ravel()
+    kmeansidfs = pickle.load(f).ravel()
 with open(r'../clustering/kmeans/terms.json') as f:
-    kmeansterms = json.load(f) #list 
+    kmeansterms = json.load(f)
 with open(r'../clustering/kmeans/urlsKmeans.json') as f:
-    kmeansurls = json.load(f) 
-
+    kmeansurls = json.load(f)
 with open(r'../clustering/complete/urlsAgg.json') as f:
-    aggurls = json.load(f) #list
-
+    aggurls = json.load(f)
 with open(r'../clustering/complete/termsAgg.json') as f:
-    aggterms = json.load(f) #list
-
+    aggterms = json.load(f)
 with open(r'../clustering/complete/idfsAgg.pickle', 'rb') as f:
-    aggidfs = pickle.load(f) #list 
-    aggidfs =aggidfs.ravel()
-
+    aggidfs =pickle.load(f).ravel()
 with open(r'../clustering/complete/CAgg.pickle', 'rb') as f:
-    completecentroids = pickle.load(f)
-    completecentroids = completecentroids.toarray()
+    completecentroids = pickle.load(f).toarray()
 with open(r'../clustering/complete/CLAgg.pickle', 'rb') as f:
-    completelabels = pickle.load(f)
-    completelabels = completelabels.toarray().ravel()
-
+    completelabels = pickle.load(f).toarray().ravel()
 with open(r'../clustering/complete/AggVectors.pickle', 'rb') as f:
-    aggvectors = pickle.load(f)
-    aggvectors = scipy.sparse.csr_matrix(aggvectors)
-
+    aggvectors = scipy.sparse.csr_matrix(pickle.load(f))
 with open(r'../clustering/single/CAggSingle.pickle', 'rb') as f:
-    singlecentroids = pickle.load(f)
-    singlecentroids = singlecentroids.toarray()
-
+    singlecentroids = pickle.load(f).toarray()
 with open(r'../clustering/single/CLAggSingle.pickle', 'rb') as f:
     singlelabels = pickle.load(f).toarray().ravel()
+with open('../index/pages_text.json', 'r') as file:
+    pages_text = json.loads(file.read())
 
 def fakeQE(results, q, num=0):
     qLow = q.lower()
