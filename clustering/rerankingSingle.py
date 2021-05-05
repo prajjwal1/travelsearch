@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 from itertools import cycle, islice
 import sys
 sys.path.append("../index")
-from util import parse_page_html
+from util import parse_page_html, get_result
 
 num_docs = 10
 
@@ -162,17 +162,20 @@ def getDocsSingle(query, vectors, labels, centroids, idfs, terms, urls):
 
             returnDocs = []
             j = 0
-            for index, score in simMap.items():
-                result = {}
-                result['url'] = urls[index]
-                title, desc = parse_page_html(urls[index])
-              
-                result['title'] = title
-                result['desc'] = desc
-                returnDocs.append(result)
-                if j >= num_docs: 
-                    break
-                j = j + 1
+            indices = list(simMap.keys())[0:num_docs]
+            sites = [urls[index] for index in indices]
+            returnDocs = get_result(sites)
+            # for index, score in simMap.items():
+            #     result = {}
+            #     result['url'] = urls[index]
+            #     title, desc = parse_page_html(urls[index])
+            #
+            #     result['title'] = title
+            #     result['desc'] = desc
+            #     returnDocs.append(result)
+            #     if j >= num_docs:
+            #         break
+            #     j = j + 1
 
     return returnDocs #send docuemnts to user interface with the new ranking 
 
