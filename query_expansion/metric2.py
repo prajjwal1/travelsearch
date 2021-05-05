@@ -200,7 +200,7 @@ def metric_cluster_main(query, data):
     #with open("../data/travel.json", "r") as read_file:
       #data = json.load(read_file)
     with open('../query_expansion/stopwords', 'r') as filehandle:
-      stopwords = filehandle.read().split()
+      stop_words = filehandle.read().split()
     #stop_words = set(stopwords)
     # query = 'olympic medal'
     # path = 
