@@ -13,7 +13,7 @@ import heapq
 import json
 
 import numpy as np
-#from nltk.corpus import stopwords
+from nltk.corpus import stopwords
 from nltk import PorterStemmer
 #import pysolr
 import pprint
@@ -61,11 +61,11 @@ def build_association(id_token_map, vocab, query):
 
 	
 def association_main(query, data):
-    #stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words('english'))
     #with open("../data/travel.json", "r") as read_file:
       #data = json.load(read_file)
-    with open('../query_expansion/stopwords', 'r') as filehandle:
-      stop_words = filehandle.read().split()
+    #with open('../query_expansion/stopwords', 'r') as filehandle:
+      #stop_words = filehandle.read().split()
     #query = 'guest rooms'
     # solr = pysolr.Solr('http://localhost:8983/solr/nutch/', always_commit=True, timeout=10)
     # results = get_results_from_solr(query, solr)

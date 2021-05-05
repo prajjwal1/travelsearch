@@ -156,15 +156,15 @@ def getDocsSingle(query, vectors, labels, centroids, idfs, terms, urls):
 
                 # i = i + 1
 
-            simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
+        simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
             #sort the scores and the for the top 1000, get the indexes (keys)
             #enter those keys into the url list
 
-            returnDocs = []
-            j = 0
-            indices = list(simMap.keys())[0:num_docs]
-            sites = [urls[index] for index in indices]
-            returnDocs = get_result(sites)
+        returnDocs = []
+        j = 0
+        indices = list(simMap.keys())[0:num_docs]
+        sites = [urls[index] for index in indices]
+        returnDocs = get_result(sites)
             # for index, score in simMap.items():
             #     result = {}
             #     result['url'] = urls[index]

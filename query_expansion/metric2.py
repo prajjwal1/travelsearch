@@ -13,7 +13,7 @@ import heapq
 import json
 
 import numpy as np
-#from nltk.corpus import stopwords
+from nltk.corpus import stopwords
 #nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer 
 #from nltk import PorterStemmer
@@ -196,11 +196,11 @@ def get_metric_clusters(tokens_map, stem_map, query):
     # pass
 
 def metric_cluster_main(query, data):
-    #stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words('english'))
     #with open("../data/travel.json", "r") as read_file:
       #data = json.load(read_file)
-    with open('../query_expansion/stopwords', 'r') as filehandle:
-      stopwords = filehandle.read().split()
+    #with open('../query_expansion/stopwords', 'r') as filehandle:
+      #stop_words = filehandle.read().split()
     #stop_words = set(stopwords)
     # query = 'olympic medal'
     # path = 
@@ -234,10 +234,10 @@ def metric_cluster_main(query, data):
     #query = 'guest rooms'
     metric_clusters = get_metric_clusters(tokens_map, stem_map, query)
     metric_clusters2 = [elem for cluster in metric_clusters for elem in cluster]
-    try:
-        metric_clusters2.sort(key=lambda x:x.value,reverse=True)
-    except:
-        return query
+    #try:
+    metric_clusters2.sort(key=lambda x:x.value,reverse=True)
+    #except:
+        #return query
     i=0;
     while(i<3):
         if(str(metric_clusters2[i].v) == ""):
