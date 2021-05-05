@@ -26,32 +26,35 @@ class HITS:
         inbound_edges = self.inbound_edges
 
         num_docs = len(outbound_edges)
-        authority_scores = np.ones(shape=num_docs)
-        hub_scores = np.ones(shape=num_docs)
-        num_iterations = 10
-        for i in range(num_iterations):
-            new_authority_scores = authority_scores.copy()
-            new_hub_sores = hub_scores.copy()
-            for doc in outbound_edges:
-                doc_index = self.doc_idxs[doc]
-                outbound_edges_for_doc = outbound_edges[doc]
-                inbound_edges_for_doc = inbound_edges[doc]
-                for outbound_doc in outbound_edges_for_doc:
-                    index = self.doc_idxs[outbound_doc]
-                    new_hub_sores[doc_index] += authority_scores[index]
-                for inbound_doc in inbound_edges_for_doc:
-                    index = self.doc_idxs[inbound_doc]
-                    new_authority_scores[doc_index] += hub_scores[index]
-            max_authority_score = max(new_authority_scores)
-            max_hub_score = max(new_hub_sores)
-            authority_scores = new_authority_scores / max_authority_score
-            hub_scores = new_hub_sores / max_hub_score
-        # want to take the docs with top 10 authority scores
-        scores = []
-        for index, authority_score in enumerate(authority_scores):
-            scores.append((self.docs[index]['page_name'], authority_score))
-        scores = sorted(scores, key=lambda x: x[1], reverse=True)
-        return [score[0] for score in scores][0:10]
+        if num_docs > 0:
+            authority_scores = np.ones(shape=num_docs)
+            hub_scores = np.ones(shape=num_docs)
+            num_iterations = 10
+            for i in range(num_iterations):
+                new_authority_scores = authority_scores.copy()
+                new_hub_sores = hub_scores.copy()
+                for doc in outbound_edges:
+                    doc_index = self.doc_idxs[doc]
+                    outbound_edges_for_doc = outbound_edges[doc]
+                    inbound_edges_for_doc = inbound_edges[doc]
+                    for outbound_doc in outbound_edges_for_doc:
+                        index = self.doc_idxs[outbound_doc]
+                        new_hub_sores[doc_index] += authority_scores[index]
+                    for inbound_doc in inbound_edges_for_doc:
+                        index = self.doc_idxs[inbound_doc]
+                        new_authority_scores[doc_index] += hub_scores[index]
+                max_authority_score = max(new_authority_scores)
+                max_hub_score = max(new_hub_sores)
+                authority_scores = new_authority_scores / max_authority_score
+                hub_scores = new_hub_sores / max_hub_score
+            # want to take the docs with top 10 authority scores
+            scores = []
+            for index, authority_score in enumerate(authority_scores):
+                scores.append((self.docs[index]['page_name'], authority_score))
+            scores = sorted(scores, key=lambda x: x[1], reverse=True)
+            return [score[0] for score in scores][0:10]
+        else:
+            return []
 
     def get_result(self):
         sites = self.run_hits()
@@ -61,7 +64,7 @@ class HITS:
 if __name__ == '__main__':
     start = time.time()
     es = Index()
-    res = es.query('uruguay')
+    res = es.query('Dallas Texas')
     hits = HITS(res)
     print(hits.get_result())
     end = time.time()
