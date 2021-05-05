@@ -135,3 +135,6 @@ dmypy.json
 # Necessary, but Too big for GitHub
 clustering/complete/AggVectors.pickle
 clustering/kmeans/S.pickle
+
+# Hide Credentials
+credentials.json

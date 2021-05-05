@@ -2,39 +2,40 @@ from flask import Flask, abort, redirect, render_template, request, url_for
 import time
 import json
 import sys
-import nltk
 import pickle
 import scipy
-# import json
-# import re
-# import requests
 
 sys.path.append("../clustering")
 from rerankingkmeans import getDocs
 from rerankingComplete import getDocsComplete
 from rerankingSingle import getDocsSingle
 
-app = Flask(__name__)
+sys.path.append('../index')
+from ElasticSearchIndex import Index
+from PageRank import PageRank
+from RankedModel import RankedModel
+from HITS import HITS
+from InvertedIndex import InvertedIndex
 
+# Instantiate Things
+app = Flask(__name__)
+index1 = Index()
+
+# Loads Necessary Data for K-Means Calculations
 with open(r'../clustering/kmeans/S.pickle', 'rb') as f:
     kmeansvectors = pickle.load(f)
     kmeansvectors = scipy.sparse.csr_matrix(kmeansvectors)
-
 with open(r'../clustering/kmeans/CL.pickle', 'rb') as f:
     kmeanslabels = pickle.load(f)
     kmeanslabels = kmeanslabels.toarray().ravel()
-
 with open(r'../clustering/kmeans/C.pickle', 'rb') as f:
     kmeanscentroids = pickle.load(f)
     kmeanscentroids = kmeanscentroids.toarray()
-
 with open(r'../clustering/kmeans/idfs.pickle', 'rb') as f:
     kmeansidfs = pickle.load(f) #list 
     kmeansidfs = kmeansidfs.ravel()
-
 with open(r'../clustering/kmeans/terms.json') as f:
     kmeansterms = json.load(f) #list 
-
 with open(r'../clustering/kmeans/urlsKmeans.json') as f:
     kmeansurls = json.load(f) 
 
@@ -81,11 +82,9 @@ def index():
 
 # Search Page
 @app.route('/search/<q>', methods=['GET', 'POST'])
-def search(q=""):
+def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
     timeStart = time.perf_counter()
-
-    # Sets eq to be the Expanded Query # TODO: Expand Query
-    eq = q 
+    eq = q # In case page is just refreshed
 
     # Gets the Query from the Interface
     if request.method == 'POST' and 'query' in request.form:
@@ -96,44 +95,38 @@ def search(q=""):
         # Gets the Query Expansion Choice
         if res_exp == "Associative":
             eq = q #TODO: FINISH THIS
-            print("Associative")
         elif res_exp == "Metric":
             eq = q #TODO: FINISH THIS
-            print("Metric")
         elif res_exp == "Scalar":
             eq = q #TODO: FINISH THIS
-            print("Scalar")
         else:
-            res_exp = "No"
+            eq = q
         
         # Gets the Algorithm Choice
         if res_algo == "PageRank":
-            results = [] #TODO: FINISH THIS
-            print("PageRank")
+            results = PageRank(index1.query(q)).get_result()
         elif res_algo == "HITS":
-            results = [] #TODO: FINISH THIS
-            print("HITS")
+            results = HITS(index1.query(q)).get_result()
+        elif res_algo == "Vector Space":
+            res = index1.query(q)
+            results = RankedModel(InvertedIndex(res)).get_result(q, res)
         elif res_algo == "K-Means":
             results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
         elif res_algo == "Single-Link Agglomerative":
             results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
         elif res_algo == "Complete-Link Agglomerative":
             results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
-        else:
-            res_algo = "Google & Bing"
-            results = []
+        # else:
+        #     res_algo = "Google & Bing"
+        #     results = []
         
         # titles = []
         # for url in results:
         #     titles.append(re.search('<\W*title\W*(.*)</title', requests.get(url).text, re.IGNORECASE).group(1))
         
         # TODO: REMOVE DEBUG INFO
-        print('EXPANSION: ', res_exp)
         print('ALGO: ', res_algo)
-    else:
-        results = []
-        res_algo = "Google & Bing"
-        res_exp = "No"
+        print('EXPANSION: ', res_exp)
     
     # Determines Time to Show Results
     elapsedTime = time.perf_counter() - timeStart
@@ -153,7 +146,4 @@ def not_found(error):
     return render_template('404.html', title="Page Not Found")
 
 if __name__ == '__main__':
-    #  nltk.download('stopwords')
-    #  nltk.download('punkt')
-    #  nltk.download('wordnet')
     app.run(debug=True)

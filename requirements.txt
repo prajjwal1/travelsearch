@@ -1,15 +1,21 @@
-unidecode
-pandas
-sklearn
-matplotlib
-nltk
-scipy
-scikit-learn 
-scipy
-
 # Web Crawling & Scraping
 Scrapy ~= 2.4.1
 wordninja
 
 # Web Framework
 Flask ~= 1.1.2
+
+# Indexing
+nltk ~= 3.4.5
+numpy ~= 1.7.1
+elasticsearch ~= 7.12.1
+boto3  ~= 1.17.44
+requests-aws4auth ~= 1.0.1
+
+# Clustering
+unidecode
+pandas
+sklearn
+matplotlib
+scipy
+scikit-learn

@@ -1,91 +1,78 @@
 from __future__ import division
 import numpy as np
-from scipy.sparse import csr_matrix
+from ElasticSearchIndex import Index
+from util import parse_page_html
+import time
+import requests
+from bs4 import BeautifulSoup
 
 class PageRank:
-    pagerank_scores = None
-    ingoing_edges = None
-    outgoing_edges = None
-    page_ids = None
-    def create_graph(self, ingoing_edges, outgoing_edges, page_ids):
-        num_pages = len(page_ids)
-        self.pagerank_scores = np.zeros(shape=num_pages)
-        self.ingoing_edges = ingoing_edges
-        self.outgoing_edges = outgoing_edges
-        self.page_ids = page_ids
-        # for source_page, target_pages in link_graph.items():
-        #     source_page_idx = page_ids[source_page]
-        #     for target_page in target_pages:
-        #         target_page_idx = page_ids[target_page]
-        #         # input for pagerank: adjacency matrix where M_i,j represents the link from 'j' to 'i'
-        #         adj_matrix[target_page_idx][source_page_idx] = 1
-        #
-        # # normalize adj matrix so that sum of column = 1
-        # column_sums = adj_matrix.sum(axis=0)
-        # self.adj_matrix = adj_matrix / column_sums[np.newaxis, :]
-
-    def load_graph(self):
-        pass
+    def __init__(self, docs):
+        inbound_edges = {}
+        outbound_edges = {}
+        doc_idxs = {}
+        # get all page names first
+        self.page_names = set([doc['page_name'] for doc in docs])
+        self.docs = docs
+        for index, doc in enumerate(docs):
+            page_name = doc['page_name']
+            outbound_edges_for_page = doc['outgoing_edges']
+            inbound_edges_for_page = doc['ingoing_edges']
+            inbound_edges[page_name] = set(page for page in inbound_edges_for_page if page in self.page_names)
+            outbound_edges[page_name] = set(page for page in outbound_edges_for_page if page in self.page_names)
+            doc_idxs[page_name] = index
+        self.outbound_edges = outbound_edges
+        self.inbound_edges = inbound_edges
+        self.doc_idxs = doc_idxs
+        self.pagerank_scores = None
 
     def perform_pagerank(self, num_iterations=100, d=0.85):
+        self.pagerank_scores = np.zeros(len(self.docs))
         # init values for all pages to 1/N
         num_pages = len(self.pagerank_scores)
         self.pagerank_scores.fill(1 / num_pages)
         for i in range(num_iterations):
-            print('Running iteration {} for page rank'.format(i))
             new_page_rank_scores = np.copy(self.pagerank_scores)
-            for page_id in self.page_ids:
-                page_index = self.page_ids[page_id]
-                if page_id in self.ingoing_edges:
-                    ingoing_pages = self.ingoing_edges[page_id]
+            for doc in self.outbound_edges:
+                doc_index = self.doc_idxs[doc]
+                if doc in self.inbound_edges:
+                    ingoing_pages = self.inbound_edges[doc]
                     sum_score = 0
                     for ingoing_page in ingoing_pages:
                         # can be none if page has no source pages
                         if ingoing_page is not None:
-                            ingoing_page_index = self.page_ids[ingoing_page]
-                            outgoing_pages = self.outgoing_edges[ingoing_page]
+                            ingoing_page_index = self.doc_idxs[ingoing_page]
+                            outbound_edges = self.outbound_edges[ingoing_page]
                             # print(len(self.page_ids), ingoing_page_index)
                             page_rank_score = self.pagerank_scores[ingoing_page_index]
-                            c = len(outgoing_pages)
+                            c = len(outbound_edges)
                             sum_score += page_rank_score / c
-                    new_page_rank_scores[page_index] = (1 - d) + d * sum_score
+                    new_page_rank_scores[doc_index] = (1 - d) + d * sum_score
             self.pagerank_scores = new_page_rank_scores
-        print(self.pagerank_scores)
+            # want to take the docs with top 10 authority scores
+        scores = []
+        for index, authority_score in enumerate(self.pagerank_scores):
+            scores.append((self.docs[index]['page_name'], authority_score))
+        scores = sorted(scores, key=lambda x: x[1], reverse=True)
+        return [score[0] for score in scores][0:10]
 
+    def get_result(self):
+        sites = self.perform_pagerank()
+        results = []
+        for site in sites:
+            result = {}
+            result['url'] = site
+            title, desc = parse_page_html(site)
+            result['title'] = title
+            result['desc'] = desc
+            results.append(result)
+        return results
 
-    """PageRank algorithm with explicit number of iterations.
-    Source: https://en.wikipedia.org/wiki/PageRank
-
-    Returns
-    -------
-    ranking of nodes (pages) in the adjacency matrix
-
-    """
-    def pagerank(M, num_iterations = 100, d = 0.85):
-        """PageRank: The trillion dollar algorithm.
-
-        Parameters
-        ----------
-        M : numpy array
-            adjacency matrix where M_i,j represents the link from 'j' to 'i', such that for all 'j'
-            sum(i, M_i,j) = 1
-        num_iterations : int, optional
-            number of iterations, by default 100
-        d : float, optional
-            damping factor, by default 0.85
-
-        Returns
-        -------
-        numpy array
-            a vector of ranks such that v_i is the i-th rank from [0, 1],
-            v sums to 1
-
-        """
-        N = M.shape[1]
-        v = np.random.rand(N, 1)
-        v = v / np.linalg.norm(v, 1)
-        M_hat = (d * M + (1 - d) / N)
-        for i in range(num_iterations):
-            v = M_hat.dot(v)
-        return v
-
+if __name__ == '__main__':
+    start = time.time()
+    es = Index()
+    res = es.query('japan', 50)
+    pr = PageRank(res)
+    print(pr.get_result())
+    end = time.time()
+    print(end-start)

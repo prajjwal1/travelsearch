@@ -12,6 +12,7 @@ import numpy as np
 import multiprocessing
 from multiprocessing import Pool, Manager
 from bs4 import BeautifulSoup
+from itertools import cycle, islice
 
 def check(cluster):
     if len(cluster) < 50:
