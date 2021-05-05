@@ -226,5 +226,3 @@ def cosineSim(queryVector, CDVector):
 
 startTime = datetime.now()
 # print(getDocs("san diego"))
-
-print("total time = ", datetime.now() - startTime)

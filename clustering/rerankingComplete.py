@@ -196,5 +196,3 @@ def cosineSim(queryVector, CDVector):
 
 #startTime = datetime.now()
 #print(getDocsComplete("san diego zoo"))
-
-#print("total time = ", datetime.now() - startTime)
