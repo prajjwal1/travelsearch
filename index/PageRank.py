@@ -29,7 +29,8 @@ class PageRank:
         self.pagerank_scores = np.zeros(len(self.docs))
         # init values for all pages to 1/N
         num_pages = len(self.pagerank_scores)
-        self.pagerank_scores.fill(1 / num_pages)
+        if num_pages > 0:
+            self.pagerank_scores.fill(1 / num_pages)
         for i in range(num_iterations):
             new_page_rank_scores = np.copy(self.pagerank_scores)
             for doc in self.outbound_edges:
@@ -62,8 +63,8 @@ class PageRank:
 if __name__ == '__main__':
     start = time.time()
     es = Index()
-    res = es.query('Dallas Texas', 50)
+    res = es.query('Dallas Texas', 150)
     pr = PageRank(res)
-    print(pr.get_result())
+    pr.get_result()
     end = time.time()
     print(end-start)
