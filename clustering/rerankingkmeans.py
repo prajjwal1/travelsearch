@@ -24,11 +24,14 @@ import sys
 sys.path.append("../index")
 from util import parse_page_html
 
+
+num_docs = 10
+
 def check(cluster):
-    if len(cluster) < 50:
+    if len(cluster) < num_docs:
         return cluster
     else:
-        return cluster[:50]
+        return cluster[:num_docs]
 
 def roundrobin(*iterables):
     num_active = len(iterables)
@@ -208,7 +211,7 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
                 result['desc'] = desc
                 returnDocs.append(result)
 
-                if j >= 50: 
+                if j >= num_docs: 
                     break
                 j = j + 1
 
