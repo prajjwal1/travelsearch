@@ -221,14 +221,17 @@ def get_result(sites):
                 if desc is None:
                     paragraph = soup.find("p")
                     if paragraph is None:
-                        "No description is not available"
+                        desc = "No description is not available"
                     else:
                         desc = paragraph.text[0:150]
                 else:
                     desc = desc['content']
                 if title is None:
                     # do some heuristics to extract title
-                    title = tldextract.extract(page_link).domain.capitalize()
+                    try:
+                        title = tldextract.extract(page_link).domain.capitalize()
+                    except:
+                        title = "No title is not available"
                 else:
                     title = title['content']
                 if len(desc) > 150:
