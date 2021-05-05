@@ -56,7 +56,7 @@ with open(r'../clustering/single/CAggSingle.pickle', 'rb') as f:
 with open(r'../clustering/single/CLAggSingle.pickle', 'rb') as f:
     singlelabels = pickle.load(f)
     singlelabels = singlelabels.toarray().ravel()
-with open('../index/pages_text.json', 'w') as file:
+with open('../index/pages_text.json', 'r') as file:
     pages_text = json.loads(file.read())
 
 # New Home Page
@@ -103,11 +103,23 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
                 input_dict['url'] = result['url']
                 input_dict['desc'] = pages_text[result['url']]
                 query_expansion_input.append(input_dict)
-            result = association_main(q, query_expansion_input)
+            results = association_main(q, query_expansion_input)
             eq = q  # TODO: FINISH THIS
         elif res_exp == "Metric":
+             for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+             results =  metric_cluster_main(q, query_expansion_input)           
             eq = q  # TODO: FINISH THIS
         elif res_exp == "Scalar":
+            for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+             results =  scalar_main(q, query_expansion_input)             
             eq = q  # TODO: FINISH THIS
         else:
             eq = q

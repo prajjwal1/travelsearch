@@ -136,6 +136,7 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
             print(vectors.shape)
             print(list(centroidSim)[:5])
 
+            global simMap
             simMap = {}
             i = 0
 
@@ -196,6 +197,7 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
                      #add the index in the vector matrix to a index : score map
                     simMap.update({i : sim}) 
             '''
+            
             simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
             #sort the scores and the for the top 1000, get the indexes (keys)
             #enter those keys into the url list

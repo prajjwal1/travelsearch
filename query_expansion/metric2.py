@@ -5,7 +5,9 @@ import json
 
 import numpy as np
 #from nltk.corpus import stopwords
-from nltk import PorterStemmer
+nltk.download('wordnet')
+from nltk.stem import WordNetLemmatizer 
+#from nltk import PorterStemmer
 #import pysolr
 import pprint
 
@@ -84,11 +86,11 @@ def get_token_map(docs_list, stop_words):
 
 # returns a dict, with key as string (stem), value as set containing strings (words)
 def make_stem_map(tokens):
-    porter_stemmer = PorterStemmer()
+    lemmatizer = WordNetLemmatizer()
     stem_map = {}
     for tokens_this_document in tokens:
         for token in tokens_this_document:
-            stem = porter_stemmer.stem(token)
+            stem = lemmatizer.lemmatize(token)
             if stem not in stem_map:
                 stem_map[stem] = set()
             stem_map[stem].add(token)
@@ -105,10 +107,10 @@ def print_top_n(normalized_matrix, stems, query, tokens_map, stem_map, top_n=3):
     for string in strings:
         queue = []
         i = -1
-        porter_stemmer = PorterStemmer()
+        lemmatizer = WordNetLemmatizer()
 
-        if porter_stemmer.stem(string) in stems:
-            i = list(stems).index(porter_stemmer.stem(string))
+        if lemmatizer.lemmatize(string) in stems:
+            i = list(stems).index(lemmatizer.lemmatize(string))
 
         if i==-1:
             #print('continuing')
@@ -184,13 +186,13 @@ def get_metric_clusters(tokens_map, stem_map, query):
     return print_top_n(normalized_matrix, stems, query, tokens_map, stem_map, top_n=3)
     # pass
 
-def metric_cluster_main():
+def metric_cluster_main(query, data):
     #stop_words = set(stopwords.words('english'))
-    with open("../data/travel.json", "r") as read_file:
-      data = json.load(read_file)
-    with open('stopwords', 'r') as filehandle:
+    #with open("../data/travel.json", "r") as read_file:
+      #data = json.load(read_file)
+    with open('../query_expansion/stopwords', 'r') as filehandle:
       stopwords = filehandle.read().split()
-    stop_words = set(stopwords)
+    #stop_words = set(stopwords)
     # query = 'olympic medal'
     # path = 
 #    solr = pysolr.Solr('http://localhost:8983/solr/nutch/', always_commit=True, timeout=10)
@@ -206,9 +208,9 @@ def metric_cluster_main():
 
     for result in data:
         print(result)
-        document_id = result['url_to']
+        document_id = result['url']
         document_ids.append(document_id)
-        tokens_this_document = tokenize_doc(result['text'], stop_words)
+        tokens_this_document = tokenize_doc(result['desc'], stop_words)
         token_counts = collections.Counter(tokens_this_document)
         for token in tokens_this_document:
             if token not in tokens_map:
@@ -220,17 +222,22 @@ def metric_cluster_main():
         tokens.append(tokens_this_document)
 
     stem_map = make_stem_map(tokens)
-    query = 'guest rooms'
+    #query = 'guest rooms'
     metric_clusters = get_metric_clusters(tokens_map, stem_map, query)
     metric_clusters2 = [elem for cluster in metric_clusters for elem in cluster]
-    metric_clusters2.sort(key=lambda x:x.value,reverse=True)
+    try:
+        metric_clusters2.sort(key=lambda x:x.value,reverse=True)
+    except:
+        return query
     i=0;
     while(i<3):
+        if(str(metric_clusters2[i].v) == ""):
+            continue
         query += ' '+ str(metric_clusters2[i].v)
         i+=1
         
-    print(query)
+    return query
     #pprint.pprint(list1)
   
-if __name__ == "__main__":
-  metric_cluster_main()
+#if __name__ == "__main__":
+  #metric_cluster_main()
