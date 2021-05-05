@@ -51,5 +51,3 @@ pickle.dump(sparse_repr, file)
 sparse_repr = scipy.sparse.csr_matrix(centroids)
 file = open("C.pickle",'wb')
 pickle.dump(sparse_repr, file)
-
-print("total time = ", datetime.now() - startTime)

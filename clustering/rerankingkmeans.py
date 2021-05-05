@@ -1,6 +1,7 @@
 import json
 from nltk.tokenize import word_tokenize
 from collections import Counter
+import requests
 #  import pandas as pd
 import multiprocessing
 from multiprocessing import Pool, Manager
@@ -221,8 +222,5 @@ def cosineSim(queryVector, CDVector):
 
     return dotProduct
 
-
-#startTime = datetime.now()
 # print(getDocs("san diego"))
 
-#print("total time = ", datetime.now() - startTime)
