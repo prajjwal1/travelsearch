@@ -136,6 +136,7 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
             print(vectors.shape)
             print(list(centroidSim)[:5])
 
+            global simMap
             simMap = {}
             i = 0
 
@@ -196,24 +197,24 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
                      #add the index in the vector matrix to a index : score map
                     simMap.update({i : sim}) 
             '''
-            simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
-            #sort the scores and the for the top 1000, get the indexes (keys)
-            #enter those keys into the url list
+    simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
+    #sort the scores and the for the top 1000, get the indexes (keys)
+    #enter those keys into the url list
 
-            returnDocs = []
-            j = 0
-            for index, score in simMap.items(): #add the top 1000 docs in the cluster to the list to send to UI
-                result = {}
-                result['url'] = urls[index]
-                title, desc = parse_page_html(urls[index])
-              
-                result['title'] = title
-                result['desc'] = desc
-                returnDocs.append(result)
+    returnDocs = []
+    j = 0
+    for index, score in simMap.items(): #add the top 1000 docs in the cluster to the list to send to UI
+        result = {}
+        result['url'] = urls[index]
+        title, desc = parse_page_html(urls[index])
+      
+        result['title'] = title
+        result['desc'] = desc
+        returnDocs.append(result)
 
-                if j >= num_docs: 
-                    break
-                j = j + 1
+        if j >= num_docs: 
+            break
+        j = j + 1
 
     return returnDocs #send documents to user interface with the new ranking 
 

@@ -124,6 +124,8 @@ def getDocsComplete(query, vectors, labels, centroids, idfs, terms, urls):
             print(vectors.shape)
             print(list(centroidSim)[:5])
 
+            global simMap
+
             simMap = {}
             l = list(centroidSim)[:5]
             #if a cluster label == maxSimCluster
@@ -162,24 +164,24 @@ def getDocsComplete(query, vectors, labels, centroids, idfs, terms, urls):
                     break
             # i = i + 1
 
-            simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
-    #sort the scores and the for the top 1000, get the indexes (keys)
-    #enter those keys into the url list
+    simMap = OrderedDict(sorted(simMap.items(), key=lambda x: x[1], reverse=True))    
+#sort the scores and the for the top 1000, get the indexes (keys)
+#enter those keys into the url list
 
-            returnDocs = []
-            j = 0
-            for index, score in simMap.items():
-                result = {}
-                result['url'] = urls[index]
-                title, desc = parse_page_html(urls[index])
-              
-                result['title'] = title
-                result['desc'] = desc
-                returnDocs.append(result)
+    returnDocs = []
+    j = 0
+    for index, score in simMap.items():
+        result = {}
+        result['url'] = urls[index]
+        title, desc = parse_page_html(urls[index])
+      
+        result['title'] = title
+        result['desc'] = desc
+        returnDocs.append(result)
 
-                if j >= num_docs: 
-                    break
-                j = j + 1
+        if j >= num_docs: 
+            break
+        j = j + 1
 
     return returnDocs #send docuemnts to user interface with the new ranking 
 
