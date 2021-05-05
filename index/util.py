@@ -231,7 +231,7 @@ def get_result(sites):
                     try:
                         title = tldextract.extract(page_link).domain.capitalize()
                     except:
-                        title = "No title is not available"
+                        title = "No title available"
                 else:
                     title = title['content']
                 if len(desc) > 150:
