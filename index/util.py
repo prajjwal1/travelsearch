@@ -7,9 +7,12 @@ from nltk import WordNetLemmatizer
 import numpy as np
 import requests
 from bs4 import BeautifulSoup
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 lemmatizer = WordNetLemmatizer()
 session = requests.Session()
+
+
 def preprocess(text):
     """"
     Preprocess text to generate tokens by tokenizing and lemmatizing the text using WordNet
@@ -127,27 +130,39 @@ def normalize(v):
 def get_titles_and_description():
     with open('../crawl/travel.json', 'r') as file:
         pages = json.loads(file.read())
-    pages_info = {}
-    for index, page in enumerate(pages):
-        page_link = page['url_to']
-        print('processing doc {}'.format(index))
-        html_doc = requests.get(page_link).text
-        soup = BeautifulSoup(html_doc, 'lxml')
-        desc = soup.find("meta", property="og:description")
-        title = soup.find("meta", property="og:title")
-        if desc is None:
-            desc = "No description available"
-        else:
-            desc = desc['content']
-        if title is None:
-            title = "No title available"
-        else:
-            title = title['content']
-        if len(desc) > 150:
-            desc = desc[0:150]
-        pages_info[page_link] = {'title':title, 'desc': desc}
+    processes = []
     with open('pages_info.json', 'w') as file:
-        file.write(json.dumps(pages_info))
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            for page in pages:
+                url = page['url_to']
+                processes.append(executor.submit(multithread_process, url))
+            count = 0
+            for task in as_completed(processes):
+                print('Finished Processing Doc {}'.format(count))
+                count += 1
+                html_doc, page_link = task.result()
+                soup = BeautifulSoup(html_doc, 'lxml')
+                desc = soup.find("meta", property="og:description")
+                title = soup.find("meta", property="og:title")
+                if desc is None:
+                    desc = "No description available"
+                else:
+                    desc = desc['content']
+                if title is None:
+                    title = "No title available"
+                else:
+                    title = title['content']
+                if len(desc) > 150:
+                    desc = desc[0:150]
+                file.write(json.dumps({'title': title, 'desc': desc}))
+
+
+
+
+def multithread_process(page):
+    html_doc = requests.get(page).text
+    return html_doc, page
+
 
 def parse_page_html(page_link):
     html_doc = session.get(page_link).text
@@ -166,6 +181,7 @@ def parse_page_html(page_link):
         desc = desc[0:150]
     return title, desc
 
+
 def get_page_text(dir):
     """
     Read json to get tokens and the page links
@@ -182,6 +198,7 @@ def get_page_text(dir):
     print(len(pages))
     with open('pages_text.json', 'w') as file:
         file.write(json.dumps(pages_text))
+
 
 if __name__ == '__main__':
     # load_data_for_elastic_search('../crawl/travel.json')
