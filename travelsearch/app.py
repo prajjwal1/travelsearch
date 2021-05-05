@@ -56,7 +56,7 @@ with open(r'../clustering/single/CAggSingle.pickle', 'rb') as f:
 with open(r'../clustering/single/CLAggSingle.pickle', 'rb') as f:
     singlelabels = pickle.load(f)
     singlelabels = singlelabels.toarray().ravel()
-with open('../index/pages_text.json', 'w') as file:
+with open('../index/pages_text.json', 'r') as file:
     pages_text = json.loads(file.read())
 
 # New Home Page
