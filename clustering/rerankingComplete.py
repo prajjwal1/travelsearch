@@ -11,6 +11,7 @@ import pickle
 import numpy as np
 import multiprocessing
 from multiprocessing import Pool, Manager
+from bs4 import BeautifulSoup
 
 def check(cluster):
     if len(cluster) < 50:
@@ -171,7 +172,7 @@ def getDocsComplete(query, vectors, labels, centroids, idfs, terms, urls):
                 result['title'] = title
                 result['desc'] = desc
                 returnDocs.append(result)
-                
+
                 if j >= 50: 
                     break
                 j = j + 1
