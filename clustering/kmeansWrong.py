@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.cluster import KMeans
 #  import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import MiniBatchKMeans, KMeans
 from datetime import datetime
 from sklearn.metrics.pairwise import linear_kernel
 import numpy as np
@@ -61,7 +61,8 @@ def kmeansWrong(pages_text, query, results):
     queryVector = vectorizer.fit_transform(queryList) #document - term matrix 
     queryVector = queryVector.toarray()
 
-    model = MiniBatchKMeans(init='k-means++', n_clusters=10, n_init=10, max_no_improvement=10, verbose=0)
+    # model = MiniBatchKMeans(init='k-means++', n_clusters=10, n_init=10, max_no_improvement=10, verbose=0, n_jobs = -2)
+    model = KMeans(init = 'k-means++', n_clusters = 10, n_init = 10, n_jobs = -2)
     labels = model.fit_predict(vectors) #indexes of the clusters each doc belongs to ndarray (matrix) of shape n_sample
     centroids = model.cluster_centers_ #(matrix)
 
