@@ -11,6 +11,7 @@ numpy ~= 1.7.1
 elasticsearch ~= 7.12.1
 boto3  ~= 1.17.44
 requests-aws4auth ~= 1.0.1
+tldextract
 
 # Clustering
 unidecode

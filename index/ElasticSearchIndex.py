@@ -28,7 +28,7 @@ class Index:
             connection_class=RequestsHttpConnection
         )
 
-    def query(self, query, max_queries=50):
+    def query(self, query, max_queries=150):
         query = {
             'more_like_this': {
                 "fields": ['page_text'],

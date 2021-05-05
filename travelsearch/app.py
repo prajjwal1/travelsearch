@@ -17,6 +17,11 @@ from RankedModel import RankedModel
 from HITS import HITS
 from InvertedIndex import InvertedIndex
 
+sys.path.append("../query_expansion")
+from association2 import association_main
+from metric2 import metric_cluster_main
+from scalar2 import scalar_main
+
 # Instantiate Things
 app = Flask(__name__)
 index1 = Index()
@@ -49,7 +54,10 @@ with open(r'../clustering/complete/AggVectors.pickle', 'rb') as f:
 with open(r'../clustering/single/CAggSingle.pickle', 'rb') as f:
     singlecentroids = pickle.load(f).toarray()
 with open(r'../clustering/single/CLAggSingle.pickle', 'rb') as f:
-    singlelabels = pickle.load(f).toarray().ravel()
+    singlelabels = pickle.load(f)
+    singlelabels = singlelabels.toarray().ravel()
+with open('../index/pages_text.json', 'r') as file:
+    pages_text = json.loads(file.read())
 
 # New Home Page
 @app.route('/',methods = ['POST', 'GET'])
@@ -72,16 +80,6 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         res_algo = request.form['algo_select']
         res_exp = request.form['exp_select']
 
-        # Gets the Query Expansion Choice
-        if res_exp == "Associative":
-            eq = q #TODO: FINISH THIS
-        elif res_exp == "Metric":
-            eq = q #TODO: FINISH THIS
-        elif res_exp == "Scalar":
-            eq = q #TODO: FINISH THIS
-        else:
-            eq = q
-        
         # Gets the Algorithm Choice
         if res_algo == "PageRank":
             results = PageRank(index1.query(q)).get_result()
@@ -96,6 +94,37 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
             results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
         elif res_algo == "Complete-Link Agglomerative":
             results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
+
+        # Gets the Query Expansion Choice
+        if res_exp == "Associative":
+            query_expansion_input = []
+            for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+            results = association_main(q, query_expansion_input)
+            eq = q  # TODO: FINISH THIS
+        elif res_exp == "Metric":
+            query_expansion_input = []
+            for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+            results =  metric_cluster_main(q, query_expansion_input)           
+            eq = q  # TODO: FINISH THIS
+        elif res_exp == "Scalar":
+            query_expansion_input = []
+            for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+            results =  scalar_main(q, query_expansion_input)             
+            eq = q  # TODO: FINISH THIS
+        else:
+            eq = q
 
         # TODO: REMOVE DEBUG INFO
         print('ALGO: ', res_algo)

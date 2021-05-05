@@ -7,8 +7,12 @@ from nltk import WordNetLemmatizer
 import numpy as np
 import requests
 from bs4 import BeautifulSoup
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import tldextract
+import time
 lemmatizer = WordNetLemmatizer()
+session = requests.Session()
+
 
 def preprocess(text):
     """"
@@ -125,30 +129,48 @@ def normalize(v):
 
 
 def get_titles_and_description():
-    page_tokens, ingoing_edges, outgoing_edges, page_ids = load_processed_tokens()
-    pages_info = {}
-    for index, page_link in enumerate(page_ids):
-        print('processing doc {}'.format(index))
-        html_doc = requests.get(page_link).text
-        soup = BeautifulSoup(html_doc, 'lxml')
-        desc = soup.find("meta", property="og:description")
-        title = soup.find("meta", property="og:title")
-        if desc is None:
-            desc = "No description available"
-        else:
-            desc = desc['content']
-        if title is None:
-            title = "No title available"
-        else:
-            title = title['content']
-        if len(desc) > 150:
-            desc = desc[0:150]
-        pages_info[page_link] = {'title':title, 'desc': desc}
+    with open('../crawl/travel.json', 'r') as file:
+        pages = json.loads(file.read())
+    processes = []
     with open('pages_info.json', 'w') as file:
-        file.write(json.dumps(pages_info))
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            for page in pages:
+                url = page['url_to']
+                processes.append(executor.submit(multithread_process, url))
+            count = 0
+            for task in as_completed(processes):
+                print('Finished Processing Doc {}'.format(count))
+                count += 1
+                try:
+                    html_doc, page_link = task.result()
+                    soup = BeautifulSoup(html_doc, 'lxml')
+                    desc = soup.find("meta", property="og:description")
+                    title = soup.find("meta", property="og:title")
+                    if desc is None:
+                        desc = "No description available"
+                    else:
+                        desc = desc['content']
+                    if title is None:
+                        title = "No title available"
+                    else:
+                        title = title['content']
+                    if len(desc) > 150:
+                        desc = desc[0:150]
+                    file.write(json.dumps({'title': title, 'desc': desc}))
+                except Exception as exc:
+                    print('%r generated an exception: %s' % (url, exc))
+
+
+
+
+
+def multithread_process(page):
+    html_doc = session.get(page).text
+    return html_doc, page
+
 
 def parse_page_html(page_link):
-    html_doc = requests.get(page_link).text
+    html_doc = session.get(page_link).text
     soup = BeautifulSoup(html_doc, 'lxml')
     desc = soup.find("meta", property="og:description")
     title = soup.find("meta", property="og:title")
@@ -164,6 +186,64 @@ def parse_page_html(page_link):
         desc = desc[0:150]
     return title, desc
 
+
+def get_page_text(dir):
+    """
+    Read json to get tokens and the page links
+    """
+    # contains tokens for all docs
+    pages_text = {}
+
+    with open(dir, 'r') as file:
+        pages = json.loads(file.read())
+    for page in pages:
+        page_name = page['url_to']
+        text = page['text']
+        pages_text[page_name] = text
+    print(len(pages))
+    with open('pages_text.json', 'w') as file:
+        file.write(json.dumps(pages_text))
+
+def get_result(sites):
+    processes = []
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        for url in sites:
+            processes.append(executor.submit(multithread_process, url))
+        count = 0
+        data = {}
+        for task in as_completed(processes):
+            count += 1
+            try:
+                html_doc, page_link = task.result()
+                soup = BeautifulSoup(html_doc, 'lxml')
+                desc = soup.find("meta", property="og:description")
+                title = soup.find("meta", property="og:title")
+                if desc is None:
+                    desc = "No description available"
+                else:
+                    desc = desc['content']
+                if title is None:
+                    # do some heuristics to extract title
+                    title = tldextract.extract(page_link).domain.capitalize()
+                else:
+                    title = title['content']
+                if len(desc) > 150:
+                    desc = desc[0:150]
+                data[page_link] = {'url': page_link, 'title':title, 'desc': desc}
+            except Exception as exc:
+                print('%r generated an exception: %s' % (url, exc))
+                return [{'url': url, 'title':"No Title Available", 'desc':'No Description Available'} for url in sites]
+    docs = []
+    # maintain the sorted order
+    for site in sites:
+        docs.append(data[site])
+    return docs
+
 if __name__ == '__main__':
     # load_data_for_elastic_search('../crawl/travel.json')
-    get_titles_and_description()
+    # get_titles_and_description()
+    start = time.time()
+    print(get_result(['https://www.thrillophilia.com/cities/geneva']))
+    end = time.time()
+    print(end-start)
+    # get_page_text('../crawl/travel.json')
