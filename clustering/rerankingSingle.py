@@ -187,5 +187,3 @@ def cosineSim(queryVector, CDVector):
 
 #startTime = datetime.now()
 #print(getDocsSingle("visa for visiting china"))
-
-#print("total time = ", datetime.now() - startTime)

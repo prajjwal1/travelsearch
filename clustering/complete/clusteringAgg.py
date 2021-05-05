@@ -66,5 +66,3 @@ sparse_repr = scipy.sparse.csr_matrix(centroids)
 # Try executing `S`
 file = open("CAgg.pickle",'wb')
 pickle.dump(sparse_repr, file)
-
-print("total time = ", datetime.now() - startTime)
