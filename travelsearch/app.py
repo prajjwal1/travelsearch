@@ -45,7 +45,7 @@ with open(r'../clustering/complete/urlsAgg.json') as f:
 with open(r'../clustering/complete/termsAgg.json') as f:
     aggterms = json.load(f)
 with open(r'../clustering/complete/idfsAgg.pickle', 'rb') as f:
-    aggidfs =pickle.load(f).ravel()
+    aggidfs = pickle.load(f).ravel()
 with open(r'../clustering/complete/CAgg.pickle', 'rb') as f:
     completecentroids = pickle.load(f).toarray()
 with open(r'../clustering/complete/CLAgg.pickle', 'rb') as f:
@@ -79,9 +79,11 @@ def fakeQE(results, q, num=0):
 
     terms = []
     for i in range(len(tokens)):
-        term = re.sub("[ ,.!?•|]", "", tokens[i].lower())
+        term = re.sub("[ ,.!?•|:;\{\}\[\]]", "", tokens[i].lower())
         if len(term) > 1 and term not in stopWords and term not in procQ:
             terms.append(term)
+    if (len(terms) < 3):
+        return qLow # Fail to Expand Query
     print(Counter(terms).most_common(3))
     return qLow + " " + re.sub("\('", "", re.sub("', [\d]+\)", "", str(Counter(terms).most_common(3)[num])))
 
