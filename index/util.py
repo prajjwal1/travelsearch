@@ -8,7 +8,8 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
+import tldextract
+import time
 lemmatizer = WordNetLemmatizer()
 session = requests.Session()
 
@@ -222,7 +223,8 @@ def get_result(sites):
                 else:
                     desc = desc['content']
                 if title is None:
-                    title = "No title available"
+                    # do some heuristics to extract title
+                    title = tldextract.extract(page_link).domain.capitalize()
                 else:
                     title = title['content']
                 if len(desc) > 150:
@@ -239,5 +241,9 @@ def get_result(sites):
 
 if __name__ == '__main__':
     # load_data_for_elastic_search('../crawl/travel.json')
-    get_titles_and_description()
+    # get_titles_and_description()
+    start = time.time()
+    print(get_result(['https://www.thrillophilia.com/cities/geneva']))
+    end = time.time()
+    print(end-start)
     # get_page_text('../crawl/travel.json')
