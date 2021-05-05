@@ -120,6 +120,8 @@ def getDocsComplete(query, vectors, labels, centroids, idfs, terms, urls):
             #if a cluster label == maxSimCluster
             i = 0
             
+            l = list(centroidSim)[:5]
+
             cluster1 = check(np.where(labels == l[0])[0])
             #  print(cluster1)
             cluster2 = check(np.where(labels == l[1])[0])
@@ -158,8 +160,19 @@ def getDocsComplete(query, vectors, labels, centroids, idfs, terms, urls):
             returnDocs = []
             j = 0
             for index, score in simMap.items():
-                returnDocs.append(urls[index])
-                if j >= 500: 
+                result = {}
+                result['url'] = urls[index]
+                html_doc = requests.get(urls[index]).text
+                soup = BeautifulSoup(html_doc, 'html.parser')
+                desc = soup.find("meta", property="og:description")['content']
+                title = soup.find("meta", property="og:title")['content']
+                if len(desc) > 150:
+                    desc = desc[0:150]
+                result['title'] = title
+                result['desc'] = desc
+                returnDocs.append(result)
+                
+                if j >= 50: 
                     break
                 j = j + 1
 
