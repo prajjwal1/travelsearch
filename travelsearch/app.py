@@ -25,6 +25,7 @@ from InvertedIndex import InvertedIndex
 # Instantiate Things
 app = Flask(__name__)
 index1 = Index()
+
 stopWords = ["a", "as", "at", "about", "after", "all", "also", "an", "and", "any", "are", "as", "be", "been", "both",
              "but", "by", "can", "de", "during", "el", "few", "for", "from", "has", "have", "he", "her", "here", "him",
              "his", "how", "i", "in", "is", "it", "its", "la", "many", "me", "more", "my", "none", "of", "on", "or",
