@@ -100,11 +100,8 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         # TODO: REMOVE DEBUG INFO
         print('ALGO: ', res_algo)
         print('EXPANSION: ', res_exp)
-    
-    # Determines Time to Show Results
-    elapsedTime = time.perf_counter() - timeStart
 
-    return render_template('search.html', q=q, eq=eq, title=q, time=elapsedTime, results=results, res_algo=res_algo, res_exp= res_exp)
+    return render_template('search.html', q=q, eq=eq, title=q, time=time.perf_counter()-timeStart, results=results, res_algo=res_algo, res_exp=res_exp)
 
 # Handles an Unknown Page
 @app.route('/<unknown_page>')
