@@ -9,9 +9,6 @@ import requests
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
 lemmatizer = WordNetLemmatizer()
 session = requests.Session()
 

@@ -1,6 +1,7 @@
 import json
 from nltk.tokenize import word_tokenize
 from collections import Counter
+import requests
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from datetime import datetime
@@ -11,14 +12,19 @@ import pickle
 import numpy as np
 import multiprocessing
 from multiprocessing import Pool, Manager
+from bs4 import BeautifulSoup
 from itertools import cycle, islice
+import sys
+sys.path.append("../index")
+from util import parse_page_html
 
+num_docs = 10
 
 def check(cluster):
-    if len(cluster) < 50:
+    if len(cluster) < num_docs:
         return cluster
     else:
-        return cluster[:50]
+        return cluster[:num_docs]
 
 def roundrobin(*iterables):
     num_active = len(iterables)
@@ -157,8 +163,14 @@ def getDocsSingle(query, vectors, labels, centroids, idfs, terms, urls):
             returnDocs = []
             j = 0
             for index, score in simMap.items():
-                returnDocs.append(urls[index])
-                if j >= 500: 
+                result = {}
+                result['url'] = urls[index]
+                title, desc = parse_page_html(urls[index])
+              
+                result['title'] = title
+                result['desc'] = desc
+                returnDocs.append(result)
+                if j >= num_docs: 
                     break
                 j = j + 1
 
@@ -177,5 +189,3 @@ def cosineSim(queryVector, CDVector):
 
 #startTime = datetime.now()
 #print(getDocsSingle("visa for visiting china"))
-
-#print("total time = ", datetime.now() - startTime)

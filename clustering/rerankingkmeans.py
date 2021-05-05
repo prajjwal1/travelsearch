@@ -1,6 +1,7 @@
 import json
 from nltk.tokenize import word_tokenize
 from collections import Counter
+import requests
 #  import pandas as pd
 import multiprocessing
 from multiprocessing import Pool, Manager
@@ -18,13 +19,19 @@ from collections import OrderedDict
 import scipy
 import pickle
 from itertools import cycle, islice
+from bs4 import BeautifulSoup
+import sys
+sys.path.append("../index")
+from util import parse_page_html
 
+
+num_docs = 10
 
 def check(cluster):
-    if len(cluster) < 50:
+    if len(cluster) < num_docs:
         return cluster
     else:
-        return cluster[:50]
+        return cluster[:num_docs]
 
 def roundrobin(*iterables):
     num_active = len(iterables)
@@ -155,6 +162,7 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
             #print("zip: ",tuple(x))
             count = 0
 
+            
             for element in li:
                 sim = cosineSim(queryVector, vectors.getrow(element).toarray())
                 simMap.update({element : sim})
@@ -195,8 +203,15 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
             returnDocs = []
             j = 0
             for index, score in simMap.items(): #add the top 1000 docs in the cluster to the list to send to UI
-                returnDocs.append(urls[index])
-                if j >= 50: 
+                result = {}
+                result['url'] = urls[index]
+                title, desc = parse_page_html(urls[index])
+              
+                result['title'] = title
+                result['desc'] = desc
+                returnDocs.append(result)
+
+                if j >= num_docs: 
                     break
                 j = j + 1
 
@@ -210,8 +225,5 @@ def cosineSim(queryVector, CDVector):
 
     return dotProduct
 
-
-startTime = datetime.now()
 # print(getDocs("san diego"))
 
-print("total time = ", datetime.now() - startTime)
