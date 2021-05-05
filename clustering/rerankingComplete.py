@@ -2,6 +2,7 @@ import json
 from nltk.tokenize import word_tokenize
 from collections import Counter
 import pandas as pd
+import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 from datetime import datetime
 from nltk.corpus import stopwords 

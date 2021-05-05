@@ -1,6 +1,7 @@
 import json
 from nltk.tokenize import word_tokenize
 from collections import Counter
+import requests
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from datetime import datetime
