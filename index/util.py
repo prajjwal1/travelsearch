@@ -8,9 +8,6 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
 lemmatizer = WordNetLemmatizer()
 session = requests.Session()
 def preprocess(text):
