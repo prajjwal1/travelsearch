@@ -1,10 +1,7 @@
 import numpy as np
 from ElasticSearchIndex import Index
 import time
-import requests
-from util import parse_page_html
-from bs4 import BeautifulSoup
-
+from util import get_result
 class HITS:
     def __init__(self, docs):
         inbound_edges = {}
@@ -58,20 +55,13 @@ class HITS:
 
     def get_result(self):
         sites = self.run_hits()
-        results = []
-        for site in sites:
-            result = {}
-            result['url'] = site
-            title, desc = parse_page_html(site)
-            result['title'] = title
-            result['desc'] = desc
-            results.append(result)
-        return results
+        return get_result(sites)
+
 
 if __name__ == '__main__':
     start = time.time()
     es = Index()
-    res = es.query('japan')
+    res = es.query('uruguay')
     hits = HITS(res)
     print(hits.get_result())
     end = time.time()

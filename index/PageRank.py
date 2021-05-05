@@ -1,10 +1,9 @@
 from __future__ import division
 import numpy as np
 from ElasticSearchIndex import Index
-from util import parse_page_html
+from util import get_result
 import time
-import requests
-from bs4 import BeautifulSoup
+
 
 class PageRank:
     def __init__(self, docs):
@@ -58,20 +57,12 @@ class PageRank:
 
     def get_result(self):
         sites = self.perform_pagerank()
-        results = []
-        for site in sites:
-            result = {}
-            result['url'] = site
-            title, desc = parse_page_html(site)
-            result['title'] = title
-            result['desc'] = desc
-            results.append(result)
-        return results
+        return get_result(sites)
 
 if __name__ == '__main__':
     start = time.time()
     es = Index()
-    res = es.query('japan', 50)
+    res = es.query('Dallas Texas', 50)
     pr = PageRank(res)
     print(pr.get_result())
     end = time.time()
