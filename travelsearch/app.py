@@ -17,6 +17,11 @@ from RankedModel import RankedModel
 from HITS import HITS
 from InvertedIndex import InvertedIndex
 
+sys.path.append("../query_expansion")
+from association2 import association_main
+from metric2 import metric_cluster_main
+from scalar2 import scalar_main
+
 # Instantiate Things
 app = Flask(__name__)
 index1 = Index()
@@ -68,7 +73,9 @@ with open(r'../clustering/single/CLAggSingle.pickle', 'rb') as f:
     singlelabels = pickle.load(f)
     singlelabels = singlelabels.toarray().ravel()
 
-
+# load json for full page text
+with open('../index/pages_text.json', 'w') as file:
+    pages_text = json.loads(file.read())
 
 
 # New Home Page
@@ -92,16 +99,6 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         res_algo = request.form['algo_select']
         res_exp = request.form['exp_select']
 
-        # Gets the Query Expansion Choice
-        if res_exp == "Associative":
-            eq = q #TODO: FINISH THIS
-        elif res_exp == "Metric":
-            eq = q #TODO: FINISH THIS
-        elif res_exp == "Scalar":
-            eq = q #TODO: FINISH THIS
-        else:
-            eq = q
-        
         # Gets the Algorithm Choice
         if res_algo == "PageRank":
             results = PageRank(index1.query(q)).get_result()
@@ -123,7 +120,23 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         # titles = []
         # for url in results:
         #     titles.append(re.search('<\W*title\W*(.*)</title', requests.get(url).text, re.IGNORECASE).group(1))
-        
+
+        # Gets the Query Expansion Choice
+        if res_exp == "Associative":
+            query_expansion_input = []
+            for result in results:
+                input_dict = {}
+                input_dict['url'] = result['url']
+                input_dict['desc'] = pages_text[result['url']]
+                query_expansion_input.append(input_dict)
+            result = association_main(q, query_expansion_input)
+            eq = q  # TODO: FINISH THIS
+        elif res_exp == "Metric":
+            eq = q  # TODO: FINISH THIS
+        elif res_exp == "Scalar":
+            eq = q  # TODO: FINISH THIS
+        else:
+            eq = q
         # TODO: REMOVE DEBUG INFO
         print('ALGO: ', res_algo)
         print('EXPANSION: ', res_exp)
