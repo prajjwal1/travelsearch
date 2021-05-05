@@ -18,7 +18,7 @@ from collections import OrderedDict
 import scipy
 import pickle
 from itertools import cycle, islice
-
+from bs4 import BeautifulSoup
 
 def check(cluster):
     if len(cluster) < 50:
@@ -155,6 +155,7 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
             #print("zip: ",tuple(x))
             count = 0
 
+            
             for element in li:
                 sim = cosineSim(queryVector, vectors.getrow(element).toarray())
                 simMap.update({element : sim})
@@ -195,7 +196,18 @@ def getDocs(query, vectors, labels, centroids, idfs, terms, urls):
             returnDocs = []
             j = 0
             for index, score in simMap.items(): #add the top 1000 docs in the cluster to the list to send to UI
-                returnDocs.append(urls[index])
+                result = {}
+                result['url'] = urls[index]
+                html_doc = requests.get(urls[index]).text
+                soup = BeautifulSoup(html_doc, 'html.parser')
+                desc = soup.find("meta", property="og:description")['content']
+                title = soup.find("meta", property="og:title")['content']
+                if len(desc) > 150:
+                    desc = desc[0:150]
+                result['title'] = title
+                result['desc'] = desc
+                returnDocs.append(result)
+
                 if j >= 50: 
                     break
                 j = j + 1
