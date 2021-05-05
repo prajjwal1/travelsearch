@@ -92,8 +92,14 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
             results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
         elif res_algo == "Single-Link Agglomerative":
             results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
+            if len(results) < 10:
+                res = index1.query(q)[50:]
+                results = RankedModel(InvertedIndex(res)).get_result(q, res)
         elif res_algo == "Complete-Link Agglomerative":
             results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
+            if len(results) < 10:
+                res = index1.query(q)[1:85]
+                results = RankedModel(InvertedIndex(res)).get_result(q, res)
 
         # Gets the Query Expansion Choice
         if res_exp == "Associative":
