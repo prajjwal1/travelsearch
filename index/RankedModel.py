@@ -2,7 +2,7 @@ from __future__ import division
 from ElasticSearchIndex import Index
 from InvertedIndex import InvertedIndex
 from math import log10
-from util import normalize
+from util import normalize, parse_page_html
 import numpy as np
 from collections import Counter
 import time
@@ -87,12 +87,7 @@ class RankedModel:
         for site in sites:
             result = {}
             result['url'] = site
-            html_doc = requests.get(site).text
-            soup = BeautifulSoup(html_doc, 'html.parser')
-            desc = soup.find("meta", property="og:description")['content']
-            title = soup.find("meta", property="og:title")['content']
-            if len(desc) > 150:
-                desc = desc[0:150]
+            title, desc = parse_page_html(site)
             result['title'] = title
             result['desc'] = desc
             results.append(result)
@@ -101,7 +96,7 @@ class RankedModel:
 if __name__ == '__main__':
     start = time.time()
     es = Index()
-    res = es.query('japan')
+    res = es.query('dallas texas')
     index = InvertedIndex(res)
     model = RankedModel(index)
     print(model.get_result('japan', res))

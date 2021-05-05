@@ -1,6 +1,7 @@
 from __future__ import division
 import numpy as np
 from ElasticSearchIndex import Index
+from util import parse_page_html
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -61,12 +62,7 @@ class PageRank:
         for site in sites:
             result = {}
             result['url'] = site
-            html_doc = requests.get(site).text
-            soup = BeautifulSoup(html_doc, 'html.parser')
-            desc = soup.find("meta", property="og:description")['content']
-            title = soup.find("meta", property="og:title")['content']
-            if len(desc) > 150:
-                desc = desc[0:150]
+            title, desc = parse_page_html(site)
             result['title'] = title
             result['desc'] = desc
             results.append(result)
@@ -77,6 +73,6 @@ if __name__ == '__main__':
     es = Index()
     res = es.query('japan', 50)
     pr = PageRank(res)
-    pr.get_result()
+    print(pr.get_result())
     end = time.time()
     print(end-start)

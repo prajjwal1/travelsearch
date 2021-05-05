@@ -39,6 +39,38 @@ with open(r'../clustering/kmeans/terms.json') as f:
 with open(r'../clustering/kmeans/urlsKmeans.json') as f:
     kmeansurls = json.load(f) 
 
+with open(r'../clustering/complete/urlsAgg.json') as f:
+    aggurls = json.load(f) #list
+
+with open(r'../clustering/complete/termsAgg.json') as f:
+    aggterms = json.load(f) #list
+
+with open(r'../clustering/complete/idfsAgg.pickle', 'rb') as f:
+    aggidfs = pickle.load(f) #list 
+    aggidfs =aggidfs.ravel()
+
+with open(r'../clustering/complete/CAgg.pickle', 'rb') as f:
+    completecentroids = pickle.load(f)
+    completecentroids = completecentroids.toarray()
+with open(r'../clustering/complete/CLAgg.pickle', 'rb') as f:
+    completelabels = pickle.load(f)
+    completelabels = completelabels.toarray().ravel()
+
+with open(r'../clustering/complete/AggVectors.pickle', 'rb') as f:
+    aggvectors = pickle.load(f)
+    aggvectors = scipy.sparse.csr_matrix(aggvectors)
+
+with open(r'../clustering/single/CAggSingle.pickle', 'rb') as f:
+    singlecentroids = pickle.load(f)
+    singlecentroids = singlecentroids.toarray()
+
+with open(r'../clustering/single/CLAggSingle.pickle', 'rb') as f:
+    singlelabels = pickle.load(f)
+    singlelabels = singlelabels.toarray().ravel()
+
+
+
+
 # New Home Page
 @app.route('/',methods = ['POST', 'GET'])
 def index():
@@ -81,9 +113,16 @@ def search(q="", results=[], res_algo="Google & Bing", res_exp="No"):
         elif res_algo == "K-Means":
             results = getDocs(q, kmeansvectors, kmeanslabels, kmeanscentroids, kmeansidfs, kmeansterms, kmeansurls)
         elif res_algo == "Single-Link Agglomerative":
-            results = getDocsSingle(q)
+            results = getDocsSingle(q, aggvectors, singlelabels, singlecentroids, aggidfs, aggterms, aggurls)
         elif res_algo == "Complete-Link Agglomerative":
-            results = getDocsComplete(q)
+            results = getDocsComplete(q, aggvectors, completelabels, completecentroids, aggidfs, aggterms, aggurls)
+        # else:
+        #     res_algo = "Google & Bing"
+        #     results = []
+        
+        # titles = []
+        # for url in results:
+        #     titles.append(re.search('<\W*title\W*(.*)</title', requests.get(url).text, re.IGNORECASE).group(1))
         
         # TODO: REMOVE DEBUG INFO
         print('ALGO: ', res_algo)
